@@ -1,5 +1,7 @@
 package com.chrnie.gomoku
 
+import java.util.*
+
 class GomokuGame {
 
     companion object {
@@ -27,6 +29,8 @@ class GomokuGame {
 
     private val chessboard = arrayOfNulls<Chessman>(CHESSBOARD_WIDTH * CHESSBOARD_HEIGHT)
 
+    private val actionQueue = ArrayDeque<Action>()
+
     var chessman = Chessman.BLACK
         private set
 
@@ -47,22 +51,23 @@ class GomokuGame {
     fun putChessman(x: Int, y: Int): Boolean {
         checkCoordinate(x, y)
 
-        if (isWin) {
+        val action = Action(x, y)
+        val isExecute = action.execute()
+        if (isExecute) {
+            actionQueue.push(action)
+        }
+        return isExecute
+    }
+
+    val canUndo get() = !actionQueue.isEmpty()
+
+    fun undo(): Boolean {
+        if (actionQueue.isEmpty()) {
             return false
         }
 
-        val index = indexOf(x, y)
-        val chessman = chessboard[index]
-        if (chessman != null) {
-            return false
-        }
-
-        chessboard[index] = chessman
-        if (checkWin()) {
-            winner = chessman
-        } else {
-            toggleChessman()
-        }
+        val action = actionQueue.pop()
+        action.undo()
         return true
     }
 
@@ -252,5 +257,39 @@ class GomokuGame {
         }
 
         return false
+    }
+
+    private inner class Action(private val x: Int, private val y: Int) {
+
+        fun execute(): Boolean {
+            if (isWin) {
+                return false
+            }
+
+            val index = indexOf(x, y)
+            val chessman = chessboard[index]
+            if (chessman != null) {
+                return false
+            }
+
+            chessboard[index] = chessman
+            if (checkWin()) {
+                winner = chessman
+            } else {
+                toggleChessman()
+            }
+            return true
+        }
+
+        fun undo() {
+            if (isWin) {
+                winner = null
+            } else {
+                toggleChessman()
+            }
+
+            val index = indexOf(x, y)
+            chessboard[index] = null
+        }
     }
 }
