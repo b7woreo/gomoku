@@ -1,0 +1,18 @@
+buildscript {
+    apply from: './config.gradle'
+
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath rootProject.plugin["kotlin"]
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
