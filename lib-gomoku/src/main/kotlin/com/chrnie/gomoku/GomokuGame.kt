@@ -5,9 +5,9 @@ import java.util.*
 class GomokuGame {
 
     companion object {
-        private const val CHESSBOARD_WIDTH = 15
-        private const val CHESSBOARD_HEIGHT = 15
-        private const val GOMOKU_COUNT = 5
+        const val CHESSBOARD_WIDTH = 15
+        const val CHESSBOARD_HEIGHT = 15
+        const val GOMOKU_COUNT = 5
     }
 
     constructor(chessboard: Array<Array<Chessman?>>) {
@@ -120,111 +120,31 @@ class GomokuGame {
         }
 
         private fun checkWin(x: Int, y: Int, chessman: Chessman): Boolean {
-            return checkHorizontalWin(x, y, chessman)
-                    || checkVerticalWin(x, y, chessman)
-                    || checkDiagonalWin(x, y, chessman)
-                    || checkInverseDiagonalWin(x, y, chessman)
+            return checkWin(HorizontalIterator(this@GomokuGame, x, y), chessman)
+                    || checkWin(VerticalIterator(this@GomokuGame, x, y), chessman)
+                    || checkWin(DiagonalIterator(this@GomokuGame, x, y), chessman)
+                    || checkWin(InverseDiagonalIterator(this@GomokuGame, x, y), chessman)
         }
 
-        private fun checkHorizontalWin(x: Int, y: Int, chessman: Chessman): Boolean {
+        private fun checkWin(iterator: ChessboardIterator, chessman: Chessman): Boolean {
             var count = 1
 
-            for (i in (0 until x).reversed()) {
-                val index = indexOf(i, y)
-                if (count == GOMOKU_COUNT || chessboard[index] != chessman) {
+            while (count != GOMOKU_COUNT && iterator.hasPrevious()) {
+                if (iterator.previous() != chessman) {
                     break
                 }
+
                 count += 1
             }
 
-            for (i in x + 1 until CHESSBOARD_WIDTH) {
-                val index = indexOf(i, y)
-                if (count == GOMOKU_COUNT || chessboard[index] != chessman) {
+            iterator.reset()
+
+            while (count != GOMOKU_COUNT && iterator.hasNext()) {
+                if (iterator.next() != chessman) {
                     break
                 }
+
                 count += 1
-            }
-
-            return count == GOMOKU_COUNT
-        }
-
-        private fun checkVerticalWin(x: Int, y: Int, chessman: Chessman): Boolean {
-            var count = 1
-
-            for (i in (0 until y).reversed()) {
-                val index = indexOf(x, i)
-                if (count == GOMOKU_COUNT || chessboard[index] != chessman) {
-                    break
-                }
-                count += 1
-            }
-
-            for (i in y + 1 until CHESSBOARD_WIDTH) {
-                val index = indexOf(x, i)
-                if (count == GOMOKU_COUNT || chessboard[index] != chessman) {
-                    break
-                }
-                count += 1
-            }
-
-            return count == GOMOKU_COUNT
-        }
-
-        private fun checkDiagonalWin(x: Int, y: Int, chessman: Chessman): Boolean {
-            var count = 1
-            var i = x - 1
-            var j = y - 1
-
-            while (i >= 0 || y >= 0) {
-                val index = indexOf(i, j)
-                if (count == GOMOKU_COUNT || chessboard[index] != chessman) {
-                    break
-                }
-                count += 1
-                i -= 1
-                j -= 1
-            }
-
-            i = x + 1
-            j = y + 1
-            while (i < CHESSBOARD_WIDTH || y < CHESSBOARD_HEIGHT) {
-                val index = indexOf(i, j)
-                if (count == GOMOKU_COUNT || chessboard[index] != chessman) {
-                    break
-                }
-                count += 1
-                i += 1
-                j += 1
-            }
-
-            return count == GOMOKU_COUNT
-        }
-
-        private fun checkInverseDiagonalWin(x: Int, y: Int, chessman: Chessman): Boolean {
-            var count = 1
-            var i = x + 1
-            var j = y - 1
-
-            while (i < CHESSBOARD_WIDTH || y >= 0) {
-                val index = indexOf(i, j)
-                if (count == GOMOKU_COUNT || chessboard[index] != chessman) {
-                    break
-                }
-                count += 1
-                i += 1
-                j -= 1
-            }
-
-            i = x - 1
-            j = y + 1
-            while (i >= 0 || y < CHESSBOARD_HEIGHT) {
-                val index = indexOf(i, j)
-                if (count == GOMOKU_COUNT || chessboard[index] != chessman) {
-                    break
-                }
-                count += 1
-                i -= 1
-                j += 1
             }
 
             return count == GOMOKU_COUNT
