@@ -10,23 +10,6 @@ class GomokuGame {
         const val GOMOKU_COUNT = 5
     }
 
-    constructor(chessboard: Array<Array<Chessman?>>) {
-        val height = chessboard.size
-        if (height != CHESSBOARD_HEIGHT) {
-            throw RuntimeException("illegal height: $height")
-        }
-        val width = chessboard[0].size
-        if (width != CHESSBOARD_WIDTH) {
-            throw RuntimeException("illegal width: $width")
-        }
-
-        for (x in 0 until CHESSBOARD_WIDTH) {
-            for (y in 0 until CHESSBOARD_HEIGHT) {
-                this.chessboard[indexOf(x, y)] = chessboard[x][y]
-            }
-        }
-    }
-
     private val chessboard = arrayOfNulls<Chessman>(CHESSBOARD_WIDTH * CHESSBOARD_HEIGHT)
 
     private val actionQueue = ArrayDeque<Action>()
