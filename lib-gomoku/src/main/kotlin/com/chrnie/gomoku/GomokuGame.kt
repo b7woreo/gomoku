@@ -54,13 +54,17 @@ class GomokuGame {
         return true
     }
 
+    private fun toggleChessman() {
+        this.chessman = if (chessman == Chessman.BLACK) Chessman.WHITE else Chessman.BLACK
+    }
+
     private fun checkCoordinate(x: Int, y: Int) {
         if (x < 0 || x >= CHESSBOARD_WIDTH) {
-            throw RuntimeException("x not in range: 0 - $CHESSBOARD_WIDTH")
+            throw RuntimeException("x not in range: 0 - ${CHESSBOARD_WIDTH - 1}, current is: $x")
         }
 
         if (y < 0 || y >= CHESSBOARD_HEIGHT) {
-            throw RuntimeException("y not in range: 0 - $CHESSBOARD_HEIGHT")
+            throw RuntimeException("y not in range: 0 - ${CHESSBOARD_HEIGHT - 1}, current is $y")
         }
     }
 
@@ -83,20 +87,19 @@ class GomokuGame {
             }
 
             chessboard[index] = chessman
+
             if (checkWin(x, y, chessman)) {
                 winner = chessman
-            } else {
-                toggleChessman()
             }
+            toggleChessman()
             return true
         }
 
         fun undo() {
             if (isWin) {
                 winner = null
-            } else {
-                toggleChessman()
             }
+            toggleChessman()
 
             val index = indexOf(x, y)
             chessboard[index] = null
@@ -131,10 +134,6 @@ class GomokuGame {
             }
 
             return count == GOMOKU_COUNT
-        }
-
-        private fun toggleChessman() {
-            this@GomokuGame.chessman = if (chessman == Chessman.BLACK) Chessman.WHITE else Chessman.BLACK
         }
     }
 }
