@@ -21,6 +21,10 @@ class GomokuAi(private val player: Chessman, private val game: GomokuGame) {
             throw RuntimeException("current not $player play")
         }
 
+        if (game.isWin) {
+            throw RuntimeException("game is win")
+        }
+
         var maxScore = Int.MIN_VALUE
         val resultList = ArrayList<Point>()
 
