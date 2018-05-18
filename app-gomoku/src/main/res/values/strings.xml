@@ -1,0 +1,8 @@
+<resources>
+  <string name="app_name">app-gomoku</string>
+  <string name="player">玩家</string>
+  <string name="computer">电脑</string>
+  <string name="game_success">%1$s 取得游戏胜利</string>
+  <string name="undo">撤销</string>
+  <string name="restart">重新开始</string>
+</resources>

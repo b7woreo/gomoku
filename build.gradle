@@ -6,6 +6,7 @@ buildscript {
         jcenter()
     }
     dependencies {
+        classpath rootProject.plugin["android"]
         classpath rootProject.plugin["kotlin"]
     }
 }

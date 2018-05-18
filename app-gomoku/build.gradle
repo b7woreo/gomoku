@@ -1,0 +1,36 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        applicationId "com.chrnie.gomoku.app"
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation project(":lib-gomoku")
+    implementation project(":lib-gomoku-ai")
+
+    implementation lib["appcompat"]
+    implementation lib["lifecycle-extensions"]
+    implementation lib["kotlin-stdlib"]
+    implementation lib["bugly"]
+    implementation lib["constraint-layout"]
+    implementation lib["cardview"]
+}
