@@ -82,7 +82,7 @@ class GomokuGame {
             }
 
             val index = indexOf(x, y)
-            if (chessboard[index] == null) {
+            if (chessboard[index] != null) {
                 return false
             }
 
