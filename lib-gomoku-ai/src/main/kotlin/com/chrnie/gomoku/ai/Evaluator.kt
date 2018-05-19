@@ -9,12 +9,12 @@ interface Evaluator {
 object EvaluatorImpl : Evaluator {
 
     override fun evaluate(game: GomokuGame, chessman: Chessman): Int = with(Statistics()) {
-        com.chrnie.gomoku.ai.EvaluatorImpl.statisticsHorizontal(this, game)
-        com.chrnie.gomoku.ai.EvaluatorImpl.statisticsVertical(this, game)
-        com.chrnie.gomoku.ai.EvaluatorImpl.statisticsDiagonal(this, game)
-        com.chrnie.gomoku.ai.EvaluatorImpl.statisticsInverseDiagonal(this, game)
+        statisticsHorizontal(this, game)
+        statisticsVertical(this, game)
+        statisticsDiagonal(this, game)
+        statisticsInverseDiagonal(this, game)
 
-        return if (chessman == com.chrnie.gomoku.Chessman.BLACK) {
+        return if (chessman == Chessman.BLACK) {
             blackScore - whileScore
         } else {
             whileScore - blackScore
