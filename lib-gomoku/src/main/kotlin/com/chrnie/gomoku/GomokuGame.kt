@@ -54,6 +54,13 @@ class GomokuGame {
         return true
     }
 
+    fun restart() {
+        chessboard.fill(null)
+        actionQueue.clear()
+        chessman = Chessman.BLACK
+        winner = null
+    }
+
     private fun toggleChessman() {
         this.chessman = if (chessman == Chessman.BLACK) Chessman.WHITE else Chessman.BLACK
     }
