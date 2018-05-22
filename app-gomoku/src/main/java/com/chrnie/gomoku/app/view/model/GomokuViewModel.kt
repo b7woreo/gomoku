@@ -56,26 +56,33 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun undo() {
-        _game.undo()
-        _game.undo()
-        _gameAi.game.undo()
-        _gameAi.game.undo()
+        while (_game.chessman != Chessman.BLACK) {
+            val playerSuccess = _game.undo()
+            val aiSuccess = synchronized(this) { _gameAi.game.undo() }
+
+            if (aiSuccess != playerSuccess) {
+                throw RuntimeException("invalid state: ai action:$aiSuccess - game action: $playerSuccess")
+            }
+        }
+
         updateView(null)
     }
 
     fun restart() {
         _game.restart()
-        _gameAi.game.restart()
+        synchronized(this) { _gameAi.game.restart() }
         updateView(null)
     }
 
     private fun putChessmanInternal(x: Int, y: Int): Boolean {
-        val aiSuccess: Boolean = synchronized(this) { _gameAi.game.putChessman(x, y) }
-        val gameSuccess = _game.putChessman(x, y)
-        if (aiSuccess != gameSuccess) {
-            throw RuntimeException("invalid state: ai action:$aiSuccess - game action: $gameSuccess")
+        val playerSuccess = _game.putChessman(x, y)
+        val aiSuccess = synchronized(this) { _gameAi.game.putChessman(x, y) }
+
+        if (aiSuccess != playerSuccess) {
+            throw RuntimeException("invalid state: ai action:$aiSuccess - game action: $playerSuccess")
         }
-        return gameSuccess
+
+        return playerSuccess
     }
 
     private fun updateView(point: Point?) {
