@@ -2,15 +2,27 @@ package com.chrnie.gomoku
 
 import java.util.*
 
-class GomokuGame {
+class GomokuGame private constructor(private val chessboard: Array<Chessman?>) {
 
     companion object {
         const val CHESSBOARD_WIDTH = 15
         const val CHESSBOARD_HEIGHT = 15
         const val GOMOKU_COUNT = 5
+
+        internal fun checkCoordinate(x: Int, y: Int) {
+            if (x < 0 || x >= CHESSBOARD_WIDTH) {
+                throw RuntimeException("x not in range: 0 - ${CHESSBOARD_WIDTH - 1}, current is: $x")
+            }
+
+            if (y < 0 || y >= CHESSBOARD_HEIGHT) {
+                throw RuntimeException("y not in range: 0 - ${CHESSBOARD_HEIGHT - 1}, current is $y")
+            }
+        }
+
+        private fun indexOf(x: Int, y: Int): Int = CHESSBOARD_WIDTH * y + x
     }
 
-    private val chessboard = arrayOfNulls<Chessman>(CHESSBOARD_WIDTH * CHESSBOARD_HEIGHT)
+    constructor() : this(arrayOfNulls(CHESSBOARD_WIDTH * CHESSBOARD_HEIGHT))
 
     private val actionQueue = ArrayDeque<Action>()
 
@@ -64,18 +76,6 @@ class GomokuGame {
     private fun toggleChessman() {
         this.chessman = if (chessman == Chessman.BLACK) Chessman.WHITE else Chessman.BLACK
     }
-
-    private fun checkCoordinate(x: Int, y: Int) {
-        if (x < 0 || x >= CHESSBOARD_WIDTH) {
-            throw RuntimeException("x not in range: 0 - ${CHESSBOARD_WIDTH - 1}, current is: $x")
-        }
-
-        if (y < 0 || y >= CHESSBOARD_HEIGHT) {
-            throw RuntimeException("y not in range: 0 - ${CHESSBOARD_HEIGHT - 1}, current is $y")
-        }
-    }
-
-    private fun indexOf(x: Int, y: Int): Int = CHESSBOARD_WIDTH * y + x
 
     private inner class Action(
             private val x: Int,
@@ -141,6 +141,21 @@ class GomokuGame {
             }
 
             return count == GOMOKU_COUNT
+        }
+    }
+
+    class Builder {
+
+        private val chessboard = arrayOfNulls<Chessman>(CHESSBOARD_WIDTH * CHESSBOARD_HEIGHT)
+
+        fun putChessman(x: Int, y: Int, chessman: Chessman): Builder {
+            checkCoordinate(x, y)
+            chessboard[indexOf(x, y)] = chessman
+            return this
+        }
+
+        fun build(): GomokuGame {
+            return GomokuGame(chessboard)
         }
     }
 }

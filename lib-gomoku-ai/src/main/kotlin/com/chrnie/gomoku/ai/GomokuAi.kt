@@ -9,7 +9,7 @@ import kotlin.math.min
 class GomokuAi(val game: GomokuGame, val difficulty: Int) {
 
     private val random = Random(System.currentTimeMillis())
-    private val evaluator = EvaluatorImpl
+    private val evaluator = Evaluator
 
     init {
         if (difficulty <= 0 || difficulty % 2 != 0) {
@@ -63,8 +63,11 @@ class GomokuAi(val game: GomokuGame, val difficulty: Int) {
 
         if (game.isWin || depth == 0) {
             game.undo()
-            return evaluator.evaluate(game, player)
+            val score = evaluator.evaluate(game, player)
+            println("($x,$y) - depth:$depth - alpha:$alpha - beta:$beta - score:$score")
+            return score
         }
+
 
         val pointList = findPutChessmanPoint()
 

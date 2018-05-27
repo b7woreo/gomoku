@@ -2,13 +2,9 @@ package com.chrnie.gomoku.ai
 
 import com.chrnie.gomoku.*
 
-interface Evaluator {
-    fun evaluate(game: GomokuGame, chessman: Chessman): Int
-}
+object Evaluator {
 
-object EvaluatorImpl : Evaluator {
-
-    override fun evaluate(game: GomokuGame, chessman: Chessman): Int = with(Statistics()) {
+    fun evaluate(game: GomokuGame, chessman: Chessman): Int = with(Statistics()) {
         statisticsHorizontal(this, game)
         statisticsVertical(this, game)
         statisticsDiagonal(this, game)
@@ -54,9 +50,9 @@ object EvaluatorImpl : Evaluator {
     }
 
     private fun statistics(iterator: ChessboardIterator, statistics: Statistics) {
-        var count = 0
-        var pre: Chessman? = null
-        var dead = false
+        var count = 1
+        var pre: Chessman? = iterator.current()
+        var dead = true
 
         while (iterator.hasNext()) {
             val cur = iterator.next()
@@ -95,6 +91,10 @@ object EvaluatorImpl : Evaluator {
             }
 
             throw RuntimeException("unknown branch: pre = $pre - current = $cur")
+        }
+
+        if (pre != null && !dead) {
+            statistics.increaseCount(pre, count, true)
         }
     }
 

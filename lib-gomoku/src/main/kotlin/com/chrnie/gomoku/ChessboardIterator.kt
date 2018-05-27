@@ -2,6 +2,10 @@ package com.chrnie.gomoku
 
 sealed class ChessboardIterator(val game: GomokuGame, val originX: Int, val originY: Int) {
 
+    init {
+        GomokuGame.checkCoordinate(originX, originY)
+    }
+
     var x: Int = originX
         protected set
     var y: Int = originY
@@ -10,6 +14,10 @@ sealed class ChessboardIterator(val game: GomokuGame, val originX: Int, val orig
     fun reset() {
         x = originX
         y = originY
+    }
+
+    fun current(): Chessman? {
+        return game.chessmanAt(x, y)
     }
 
     abstract fun hasNext(): Boolean
