@@ -11,6 +11,7 @@ import com.chrnie.gomoku.Chessman
 import com.chrnie.gomoku.GomokuGame
 import com.chrnie.gomoku.ai.GomokuAi
 import com.chrnie.gomoku.ai.Point
+import com.chrnie.gomoku.app.common.Event
 import com.chrnie.gomoku.app.model.Setting
 import java.util.concurrent.Executors
 
@@ -41,6 +42,7 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
     val lastPutPoint = MutableLiveData<Point>()
     val currentChessman = MutableLiveData<Chessman>()
     val winner = MutableLiveData<Chessman>()
+    val displayInterstitialAd = MutableLiveData<Event<Unit>>()
 
     init {
         difficalty.value = _setting.difficalty
@@ -90,6 +92,7 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun restart() {
+        displayInterstitialAd.value = Event(Unit)
         _game.restart()
         synchronized(this) { _gameAi.game.restart() }
         updateView(null)

@@ -129,4 +129,12 @@
     app:layout_constraintTop_toTopOf="@+id/cvContent"
     tools:text="玩家 取得游戏胜利"
     tools:visibility="visible"/>
+
+  <FrameLayout
+    android:id="@+id/flBanner"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"/>
 </android.support.constraint.ConstraintLayout>

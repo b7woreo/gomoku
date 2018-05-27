@@ -33,4 +33,5 @@ dependencies {
     implementation lib["bugly"]
     implementation lib["constraint-layout"]
     implementation lib["cardview"]
+    implementation lib["play-services-ads"]
 }

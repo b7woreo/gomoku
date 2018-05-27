@@ -6,12 +6,15 @@ import android.graphics.Point
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
-import android.view.View.GONE
-import android.view.View.SYSTEM_UI_FLAG_LOW_PROFILE
+import android.view.View.*
 import com.chrnie.gomoku.Chessman
 import com.chrnie.gomoku.app.R
+import com.chrnie.gomoku.app.const.BANNER_ID
+import com.chrnie.gomoku.app.const.INTERSTITIAL_ID
 import com.chrnie.gomoku.app.view.model.GomokuViewModel
+import com.google.android.gms.ads.*
 import kotlinx.android.synthetic.main.activity_gomoku.*
 
 class GomokuActivity : AppCompatActivity() {
@@ -21,11 +24,51 @@ class GomokuActivity : AppCompatActivity() {
     }
 
     private val viewModel by lazy { ViewModelProviders.of(this)[GomokuViewModel::class.java] }
+    private val adView by lazy {
+        AdView(this).apply {
+            adSize = AdSize.BANNER
+            adUnitId = BANNER_ID
+            adListener = object : AdListener() {
+                override fun onAdLoaded() {
+                    Log.i(TAG, "ad view loaded")
+                }
+
+                override fun onAdFailedToLoad(p0: Int) {
+                    Log.i(TAG, "ad view load fail")
+                    loadAd(this@apply)
+                }
+
+                override fun onAdClosed() {
+                    loadAd(this@apply)
+                }
+            }
+        }
+    }
+
+    private val interstitialAd by lazy {
+        InterstitialAd(this).apply {
+            adUnitId = INTERSTITIAL_ID
+            adListener = object : AdListener() {
+                override fun onAdLoaded() {
+                    Log.i(TAG, "interstitial ad loaded")
+                    super.onAdLoaded()
+                }
+
+                override fun onAdFailedToLoad(p0: Int) {
+                    Log.i(TAG, "interstitial ad load fail")
+                    loadAd(this@apply)
+                }
+
+                override fun onAdClosed() {
+                    loadAd(this@apply)
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gomoku)
-        gomokuView.systemUiVisibility = (gomokuView.systemUiVisibility or SYSTEM_UI_FLAG_LOW_PROFILE)
 
         viewModel.difficalty.observe(this, Observer {
             when (it!!) {
@@ -62,6 +105,8 @@ class GomokuActivity : AppCompatActivity() {
             val winner = if (it == Chessman.BLACK) getString(R.string.player) else getString(R.string.computer)
             tvGameMessage.text = getString(R.string.game_success, winner)
         })
+        viewModel.displayInterstitialAd.observe(this, Observer { it!!.consume()?.run { interstitialAd.show() } })
+
         gomokuView.onPutChessmanListener = { x, y -> viewModel.putChessman(x, y) }
 
         btnRestart.setOnClickListener { viewModel.restart() }
@@ -88,6 +133,30 @@ class GomokuActivity : AppCompatActivity() {
                         dialog.dismiss()
                     }
                     .show()
+        }
+
+        flBanner.addView(adView)
+        loadAd(adView)
+        loadAd(interstitialAd)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        gomokuView.systemUiVisibility = (gomokuView.systemUiVisibility
+                or SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or SYSTEM_UI_FLAG_LOW_PROFILE
+                )
+    }
+
+    private fun loadAd(adView: AdView) {
+        AdRequest.Builder().build().let {
+            adView.loadAd(it)
+        }
+    }
+
+    private fun loadAd(interstitialAd: InterstitialAd) {
+        AdRequest.Builder().build().let {
+            interstitialAd.loadAd(it)
         }
     }
 }
