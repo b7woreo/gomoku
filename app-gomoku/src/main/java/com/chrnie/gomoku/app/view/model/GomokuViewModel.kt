@@ -56,14 +56,14 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun undo() {
-        while (_game.chessman != Chessman.BLACK) {
+        do {
             val playerSuccess = _game.undo()
             val aiSuccess = synchronized(this) { _gameAi.game.undo() }
 
             if (aiSuccess != playerSuccess) {
                 throw RuntimeException("invalid state: ai action:$aiSuccess - game action: $playerSuccess")
             }
-        }
+        } while (_game.chessman != Chessman.BLACK)
 
         updateView(null)
     }
