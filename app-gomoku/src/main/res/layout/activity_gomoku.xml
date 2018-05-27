@@ -13,7 +13,7 @@
     android:layout_marginStart="48dp"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    app:layout_constraintBottom_toTopOf="@+id/cvContent"
+    app:layout_constraintBottom_toTopOf="@+id/llCom"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintTop_toTopOf="parent">
 
@@ -32,12 +32,12 @@
     android:id="@+id/llCom"
     android:layout_width="100dp"
     android:layout_height="48dp"
-    android:layout_marginEnd="48dp"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    app:layout_constraintBottom_toTopOf="@+id/cvContent"
-    app:layout_constraintRight_toRightOf="parent"
-    app:layout_constraintTop_toTopOf="parent">
+    app:layout_constraintBottom_toTopOf="@id/cvContent"
+    app:layout_constraintLeft_toLeftOf="@id/llPlayer"
+    app:layout_constraintRight_toRightOf="@id/llPlayer"
+    app:layout_constraintTop_toBottomOf="@+id/llPlayer">
 
     <ImageView
       android:layout_width="24dp"
@@ -48,6 +48,44 @@
       android:id="@+id/tvCom"
       style="@style/GomokuTagStyle"
       android:text="@string/computer"/>
+  </LinearLayout>
+
+  <LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="0dp"
+    android:layout_marginEnd="48dp"
+    android:orientation="vertical"
+    app:layout_constraintBottom_toBottomOf="@id/llCom"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="@id/llPlayer">
+
+    <Button
+      android:id="@+id/btnDifficalty"
+      style="@style/GomokuButtonStyle"
+      android:elevation="2dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toLeftOf="@+id/btnUndo"
+      app:layout_constraintTop_toBottomOf="@+id/cvContent"
+      tools:text="@string/difficalty_easy"/>
+
+    <Button
+      android:id="@+id/btnRestart"
+      style="@style/GomokuButtonStyle"
+      android:text="@string/restart"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toLeftOf="@+id/btnUndo"
+      app:layout_constraintTop_toBottomOf="@+id/cvContent"/>
+
+    <Button
+      android:id="@+id/btnUndo"
+      style="@style/GomokuButtonStyle"
+      android:text="@string/undo"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintLeft_toRightOf="@+id/btnRestart"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/cvContent"/>
   </LinearLayout>
 
   <android.support.v7.widget.CardView
@@ -62,7 +100,8 @@
     app:layout_constraintDimensionRatio="1:1"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
-    app:layout_constraintTop_toTopOf="parent">
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_bias="0.55">
 
     <com.chrnie.gomoku.app.widget.GomokuView
       android:id="@+id/gomokuView"
@@ -90,22 +129,4 @@
     app:layout_constraintTop_toTopOf="@+id/cvContent"
     tools:text="玩家 取得游戏胜利"
     tools:visibility="visible"/>
-
-  <Button
-    android:id="@+id/btnRestart"
-    style="@style/GomokuButtonStyle"
-    android:text="@string/restart"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintLeft_toLeftOf="parent"
-    app:layout_constraintRight_toLeftOf="@+id/btnUndo"
-    app:layout_constraintTop_toBottomOf="@+id/cvContent"/>
-
-  <Button
-    android:id="@+id/btnUndo"
-    style="@style/GomokuButtonStyle"
-    android:text="@string/undo"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintLeft_toRightOf="@+id/btnRestart"
-    app:layout_constraintRight_toRightOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/cvContent"/>
 </android.support.constraint.ConstraintLayout>

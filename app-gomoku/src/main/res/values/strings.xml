@@ -5,4 +5,8 @@
   <string name="game_success">%1$s 取得游戏胜利</string>
   <string name="undo">撤销</string>
   <string name="restart">重新开始</string>
+  <string name="title_difficalty">难度</string>
+  <string name="difficalty_easy">简单</string>
+  <string name="difficalty_mid">中等</string>
+  <string name="difficalty_hard">困难</string>
 </resources>
