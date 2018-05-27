@@ -96,24 +96,21 @@ class GomokuView @JvmOverloads constructor(
     private fun drawChessboard(canvas: Canvas, x: Int, y: Int) {
         val halfZoom = zoom / 2
 
-        var clipCount: Int? = null
+        val clipCount = canvas.save()
+
         if (x == 0) {
-            clipCount = canvas.save()
             canvas.clipRect(halfZoom - 1, 0, zoom, zoom)
         }
 
         if (x == GomokuGame.CHESSBOARD_WIDTH - 1) {
-            clipCount = canvas.save()
             canvas.clipRect(0, 0, halfZoom + 2, zoom)
         }
 
         if (y == 0) {
-            clipCount = canvas.save()
             canvas.clipRect(0, halfZoom - 1, zoom, zoom)
         }
 
         if (y == GomokuGame.CHESSBOARD_HEIGHT - 1) {
-            clipCount = canvas.save()
             canvas.clipRect(0, 0, zoom, halfZoom + 2)
         }
 
@@ -130,9 +127,7 @@ class GomokuView @JvmOverloads constructor(
         _path.lineTo(halfWidth, zoom.toFloat())
         canvas.drawPath(_path, _linePaint)
 
-        clipCount?.let {
-            canvas.restoreToCount(it)
-        }
+        canvas.restoreToCount(clipCount)
     }
 
     private fun drawAnchor(canvas: Canvas, x: Int, y: Int) {
