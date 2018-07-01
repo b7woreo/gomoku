@@ -70,12 +70,12 @@ class GomokuActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gomoku)
 
-        viewModel.difficalty.observe(this, Observer {
+        viewModel.difficulty.observe(this, Observer {
             when (it!!) {
-                GomokuViewModel.DIFFICALTY_EASY -> R.string.difficalty_easy
-                GomokuViewModel.DIFFICALTY_MID -> R.string.difficalty_mid
-                GomokuViewModel.DIFFICALTY_HIGH -> R.string.difficalty_hard
-                else -> throw RuntimeException("unknown difficalty")
+                GomokuViewModel.DIFFICULTY_EASY -> R.string.difficalty_easy
+                GomokuViewModel.DIFFICULTY_MID -> R.string.difficalty_mid
+                GomokuViewModel.DIFFICULTY_HIGH -> R.string.difficalty_hard
+                else -> throw RuntimeException("unknown difficulty")
             }.let {
                 btnDifficalty.setText(it)
             }
@@ -112,23 +112,23 @@ class GomokuActivity : AppCompatActivity() {
         btnRestart.setOnClickListener { viewModel.restart() }
         btnUndo.setOnClickListener { viewModel.undo() }
         btnDifficalty.setOnClickListener {
-            val selectedIndex = when (viewModel.difficalty.value!!) {
-                GomokuViewModel.DIFFICALTY_EASY -> 0
-                GomokuViewModel.DIFFICALTY_MID -> 1
-                GomokuViewModel.DIFFICALTY_HIGH -> 2
-                else -> throw RuntimeException("unknown difficalty")
+            val selectedIndex = when (viewModel.difficulty.value!!) {
+                GomokuViewModel.DIFFICULTY_EASY -> 0
+                GomokuViewModel.DIFFICULTY_MID -> 1
+                GomokuViewModel.DIFFICULTY_HIGH -> 2
+                else -> throw RuntimeException("unknown difficulty")
             }
 
             AlertDialog.Builder(this)
                     .setTitle(R.string.title_difficalty)
                     .setSingleChoiceItems(R.array.item_difficalty, selectedIndex) { dialog, which ->
                         when (which) {
-                            0 -> GomokuViewModel.DIFFICALTY_EASY
-                            1 -> GomokuViewModel.DIFFICALTY_MID
-                            2 -> GomokuViewModel.DIFFICALTY_HIGH
-                            else -> throw RuntimeException("unknown difficalty")
+                            0 -> GomokuViewModel.DIFFICULTY_EASY
+                            1 -> GomokuViewModel.DIFFICULTY_MID
+                            2 -> GomokuViewModel.DIFFICULTY_HIGH
+                            else -> throw RuntimeException("unknown difficulty")
                         }.let {
-                            viewModel.setDifficalty(it)
+                            viewModel.setDifficulty(it)
                         }
                         dialog.dismiss()
                     }

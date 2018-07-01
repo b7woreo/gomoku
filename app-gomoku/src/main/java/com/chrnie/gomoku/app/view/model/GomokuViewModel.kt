@@ -22,9 +22,9 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
     companion object {
         private val TAG = "GomokuViewModel"
 
-        const val DIFFICALTY_EASY = 2
-        const val DIFFICALTY_MID = 4
-        const val DIFFICALTY_HIGH = 6
+        const val DIFFICULTY_EASY = 2
+        const val DIFFICULTY_MID = 4
+        const val DIFFICULTY_HIGH = 6
     }
 
 
@@ -35,7 +35,7 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
     @GuardedBy("_mutex")
     private lateinit var _gameAi: GomokuAi
 
-    val difficalty = MutableLiveData<Int>()
+    val difficulty = MutableLiveData<Int>()
     val game = MutableLiveData<GomokuGame>()
     val canUndo = MutableLiveData<Boolean>()
     val lastPutPoint = MutableLiveData<Point>()
@@ -44,20 +44,20 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
     val displayInterstitialAd = MutableLiveData<Event<Unit>>()
 
     init {
-        difficalty.value = _setting.difficalty
+        difficulty.value = _setting.difficalty
         _game = GomokuGame()
-        runBlocking { _mutex.withLock { _gameAi = GomokuAi(GomokuGame(), difficalty.value!!) } }
+        runBlocking { _mutex.withLock { _gameAi = GomokuAi(GomokuGame(), difficulty.value!!) } }
         synchronized(this) { }
 
         updateView(null)
     }
 
-    fun setDifficalty(difficalty: Int) {
-        _setting.difficalty = difficalty
-        this.difficalty.value = difficalty
+    fun setDifficulty(difficulty: Int) {
+        _setting.difficalty = difficulty
+        this.difficulty.value = difficulty
 
         _game = GomokuGame()
-        runBlocking { _mutex.withLock { _gameAi = GomokuAi(GomokuGame(), difficalty) } }
+        runBlocking { _mutex.withLock { _gameAi = GomokuAi(GomokuGame(), difficulty) } }
         restart()
     }
 
