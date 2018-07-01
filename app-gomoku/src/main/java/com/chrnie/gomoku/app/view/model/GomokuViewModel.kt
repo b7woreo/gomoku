@@ -3,8 +3,6 @@ package com.chrnie.gomoku.app.view.model
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
-import android.os.Handler
-import android.os.Looper
 import android.support.annotation.GuardedBy
 import android.util.Log
 import com.chrnie.gomoku.Chessman
@@ -13,7 +11,11 @@ import com.chrnie.gomoku.ai.GomokuAi
 import com.chrnie.gomoku.ai.Point
 import com.chrnie.gomoku.app.common.Event
 import com.chrnie.gomoku.app.model.Setting
-import java.util.concurrent.Executors
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.sync.Mutex
+import kotlinx.coroutines.experimental.sync.withLock
 
 class GomokuViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -23,17 +25,14 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
         const val DIFFICALTY_EASY = 2
         const val DIFFICALTY_MID = 4
         const val DIFFICALTY_HIGH = 6
-
-        private val mainHandler = Handler(Looper.getMainLooper())
-        private val calculateExecutor = Executors.newSingleThreadExecutor {
-            Thread(it, "gomoku-ai-thread")
-        }
     }
+
 
     private val _setting = Setting(app)
     private var _game: GomokuGame
 
-    @GuardedBy("this")
+    private val _mutex = Mutex()
+    @GuardedBy("_mutex")
     private lateinit var _gameAi: GomokuAi
 
     val difficalty = MutableLiveData<Int>()
@@ -47,7 +46,8 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
     init {
         difficalty.value = _setting.difficalty
         _game = GomokuGame()
-        synchronized(this) { _gameAi = GomokuAi(GomokuGame(), difficalty.value!!) }
+        runBlocking { _mutex.withLock { _gameAi = GomokuAi(GomokuGame(), difficalty.value!!) } }
+        synchronized(this) { }
 
         updateView(null)
     }
@@ -57,7 +57,7 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
         this.difficalty.value = difficalty
 
         _game = GomokuGame()
-        synchronized(this) { _gameAi = GomokuAi(GomokuGame(), difficalty) }
+        runBlocking { _mutex.withLock { _gameAi = GomokuAi(GomokuGame(), difficalty) } }
         restart()
     }
 
@@ -74,14 +74,14 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
         updateView(Point(x, y))
 
         if (!_game.isWin) {
-            calculateExecutor.submit { aiPutChessman() }
+            aiPutChessman()
         }
     }
 
     fun undo() {
         do {
             val playerSuccess = _game.undo()
-            val aiSuccess = synchronized(this) { _gameAi.game.undo() }
+            val aiSuccess = runBlocking { _mutex.withLock { _gameAi.game.undo() } }
 
             if (aiSuccess != playerSuccess) {
                 throw RuntimeException("invalid state: ai action:$aiSuccess - game action: $playerSuccess")
@@ -94,13 +94,13 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
     fun restart() {
         displayInterstitialAd.value = Event(Unit)
         _game.restart()
-        synchronized(this) { _gameAi.game.restart() }
+        runBlocking { _mutex.withLock { _gameAi.game.restart() } }
         updateView(null)
     }
 
     private fun putChessmanInternal(x: Int, y: Int): Boolean {
         val playerSuccess = _game.putChessman(x, y)
-        val aiSuccess = synchronized(this) { _gameAi.game.putChessman(x, y) }
+        val aiSuccess = runBlocking { _mutex.withLock { _gameAi.game.putChessman(x, y) } }
 
         if (aiSuccess != playerSuccess) {
             throw RuntimeException("invalid state: ai action:$aiSuccess - game action: $playerSuccess")
@@ -117,10 +117,9 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
         winner.value = _game.winner
     }
 
-    private fun aiPutChessman() {
-        val p = synchronized(this) { _gameAi.next() }
-
-        mainHandler.post {
+    private fun aiPutChessman() = launch {
+        val p = _mutex.withLock { _gameAi.next() }
+        launch(UI) {
             if (!putChessmanInternal(p.x, p.y)) {
                 throw RuntimeException("ai error")
             }

@@ -30,6 +30,7 @@ dependencies {
     implementation lib["appcompat"]
     implementation lib["lifecycle-extensions"]
     implementation lib["kotlin-stdlib"]
+    implementation lib["kotlin-coroutines-android"]
     implementation lib["bugly"]
     implementation lib["constraint-layout"]
     implementation lib["cardview"]
