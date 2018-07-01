@@ -3,6 +3,7 @@ package com.chrnie.gomoku.ai
 import com.chrnie.gomoku.Chessman
 import com.chrnie.gomoku.GomokuGame
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
 
@@ -10,6 +11,7 @@ class GomokuAi(val game: GomokuGame, val difficulty: Int) {
 
     private val random = Random(System.currentTimeMillis())
     private val evaluator = Evaluator
+    private val evaluatorPoint = EvaluatorPoint
 
     init {
         if (difficulty <= 0 || difficulty % 2 != 0) {
@@ -56,16 +58,19 @@ class GomokuAi(val game: GomokuGame, val difficulty: Int) {
         return resultList[r]
     }
 
-    private fun alphabeta(x: Int, y: Int, depth: Int, alpha: Int, beta: Int, player: Chessman): Int {
-        println("($x,$y) - depth:$depth - alpha:$alpha - beta:$beta")
-
+    private fun alphabeta(
+        x: Int,
+        y: Int,
+        depth: Int,
+        alpha: Int,
+        beta: Int,
+        player: Chessman
+    ): Int {
         game.putChessman(x, y)
 
         if (game.isWin || depth == 0) {
             game.undo()
-            val score = evaluator.evaluate(game, player)
-            println("($x,$y) - depth:$depth - alpha:$alpha - beta:$beta - score:$score")
-            return score
+            return evaluator.evaluate(game, player)
         }
 
 
@@ -124,6 +129,26 @@ class GomokuAi(val game: GomokuGame, val difficulty: Int) {
             }
         }
 
-        return set.filter { (x, y) -> (x in 0 until width) && (y in 0 until height) && (game.chessmanAt(x, y) == null) }
+        return set.filter { (x, y) ->
+            (x in 0 until width) && (y in 0 until height) && (game.chessmanAt(
+                x,
+                y
+            ) == null)
+        }.groupBy {
+            val black = evaluatorPoint.evaluate(game, Chessman.BLACK, it.x, it.y)
+            val white = evaluatorPoint.evaluate(game, Chessman.WHITE, it.x, it.y)
+
+            max(black, white)
+        }.let {
+            it[EvaluatorPoint.WIN]?.takeIf { it.isNotEmpty() }?.apply { return@let this }
+            it[EvaluatorPoint.LIVE_FOUR]?.takeIf { it.isNotEmpty() }?.apply { return@let this }
+            it[EvaluatorPoint.DOUBLE_THREE]?.takeIf { it.isNotEmpty() }?.apply { return@let this }
+
+            ArrayList<Point>().apply {
+                it[EvaluatorPoint.LIVE_THREE]?.let { addAll(it) }
+                it[EvaluatorPoint.LIVE_TWO]?.let { addAll(it) }
+                it[EvaluatorPoint.OTHER]?.let { addAll(it) }
+            }
+        }
     }
 }
