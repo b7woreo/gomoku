@@ -1,6 +1,6 @@
 package com.chrnie.gomoku
 
 enum class Chessman {
-    BLACK,
-    WHITE
+  BLACK,
+  WHITE
 }

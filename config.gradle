@@ -4,17 +4,17 @@ ext {
 }
 
 ext {
-    compileSdkVersion = 27
-    buildToolsVersion = "27.0.3"
-    minSdkVersion = 21
-    targetSdkVersion = 27
+    compileSdkVersion = 28
+    buildToolsVersion = "28.0.3"
+    minSdkVersion = 16
+    targetSdkVersion = 28
 }
 
-def kotlin_version = '1.2.50'
-def support_version = '27.1.1'
+def kotlin_version = '1.2.71'
+def support_version = '28.0.0'
 
 ext.plugin = [
-        "android": "com.android.tools.build:gradle:3.1.3",
+        "android": "com.android.tools.build:gradle:3.2.1",
         "kotlin" : "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 ]
 

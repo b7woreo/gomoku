@@ -22,11 +22,10 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
     companion object {
         private val TAG = "GomokuViewModel"
 
-        const val DIFFICULTY_EASY = 2
-        const val DIFFICULTY_MID = 4
-        const val DIFFICULTY_HIGH = 6
+        const val DIFFICULTY_EASY = 1
+        const val DIFFICULTY_MID = 2
+        const val DIFFICULTY_HIGH = 3
     }
-
 
     private val _setting = Setting(app)
     private var _game: GomokuGame
