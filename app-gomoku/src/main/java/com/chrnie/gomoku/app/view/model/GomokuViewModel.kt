@@ -7,7 +7,7 @@ import android.support.annotation.GuardedBy
 import android.util.Log
 import com.chrnie.gomoku.Chessman
 import com.chrnie.gomoku.GomokuGame
-import com.chrnie.gomoku.ai.GomokuAi
+import com.chrnie.gomoku.ai.AiGomokuGame
 import com.chrnie.gomoku.ai.Point
 import com.chrnie.gomoku.app.common.Event
 import com.chrnie.gomoku.app.model.Setting
@@ -32,7 +32,7 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _mutex = Mutex()
     @GuardedBy("_mutex")
-    private lateinit var _gameAi: GomokuAi
+    private lateinit var _aiGame: AiGomokuGame
 
     val difficulty = MutableLiveData<Int>()
     val game = MutableLiveData<GomokuGame>()
@@ -45,19 +45,16 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
     init {
         difficulty.value = _setting.difficalty
         _game = GomokuGame()
-        runBlocking { _mutex.withLock { _gameAi = GomokuAi(GomokuGame(), difficulty.value!!) } }
+      runBlocking { _mutex.withLock { _aiGame = AiGomokuGame(difficulty.value!!) } }
         synchronized(this) { }
 
         updateView(null)
     }
 
     fun setDifficulty(difficulty: Int) {
-        _setting.difficalty = difficulty
-        this.difficulty.value = difficulty
-
-        _game = GomokuGame()
-        runBlocking { _mutex.withLock { _gameAi = GomokuAi(GomokuGame(), difficulty) } }
-        restart()
+      _setting.difficalty = difficulty
+      this.difficulty.value = difficulty
+      restart()
     }
 
     fun putChessman(x: Int, y: Int) {
@@ -79,33 +76,33 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
 
     fun undo() {
         do {
-            val playerSuccess = _game.undo()
-            val aiSuccess = runBlocking { _mutex.withLock { _gameAi.game.undo() } }
+          val playerSuccess = _game.undo()
+          val aiSuccess = runBlocking { _mutex.withLock { _aiGame.undo() } }
 
-            if (aiSuccess != playerSuccess) {
-                throw RuntimeException("invalid state: ai action:$aiSuccess - game action: $playerSuccess")
-            }
+          if (aiSuccess != playerSuccess) {
+            throw RuntimeException("invalid state: ai action:$aiSuccess - game action: $playerSuccess")
+          }
         } while (_game.chessman != Chessman.BLACK)
 
         updateView(null)
     }
 
     fun restart() {
-        displayInterstitialAd.value = Event(Unit)
-        _game.restart()
-        runBlocking { _mutex.withLock { _gameAi.game.restart() } }
-        updateView(null)
+      displayInterstitialAd.value = Event(Unit)
+      _game = GomokuGame()
+      runBlocking { _mutex.withLock { _aiGame = AiGomokuGame(difficulty.value!!) } }
+      updateView(null)
     }
 
     private fun putChessmanInternal(x: Int, y: Int): Boolean {
-        val playerSuccess = _game.putChessman(x, y)
-        val aiSuccess = runBlocking { _mutex.withLock { _gameAi.game.putChessman(x, y) } }
+      val playerSuccess = _game.putChessman(x, y)
+      val aiSuccess = runBlocking { _mutex.withLock { _aiGame.putChessman(x, y) } }
 
-        if (aiSuccess != playerSuccess) {
-            throw RuntimeException("invalid state: ai action:$aiSuccess - game action: $playerSuccess")
-        }
+      if (aiSuccess != playerSuccess) {
+        throw RuntimeException("invalid state: ai action:$aiSuccess - game action: $playerSuccess")
+      }
 
-        return playerSuccess
+      return playerSuccess
     }
 
     private fun updateView(point: Point?) {
@@ -117,7 +114,7 @@ class GomokuViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private fun aiPutChessman() = launch {
-        val p = _mutex.withLock { _gameAi.next() }
+      val p = _mutex.withLock { _aiGame.next() }
         launch(UI) {
             if (!putChessmanInternal(p.x, p.y)) {
                 throw RuntimeException("ai error")

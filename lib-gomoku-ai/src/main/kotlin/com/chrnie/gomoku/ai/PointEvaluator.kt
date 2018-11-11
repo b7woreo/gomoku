@@ -38,7 +38,7 @@ internal object PointEvaluator {
   ): Int {
     var count = 1
     var live = true
-    val out = arrayOf(-1, -1)
+    val out = intArrayOf(-1, -1)
 
     for (dX in 1..Int.MAX_VALUE) {
       mapping.map(x, y, dX, 0, out)

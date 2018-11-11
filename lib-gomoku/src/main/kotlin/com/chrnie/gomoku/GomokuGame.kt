@@ -2,7 +2,7 @@ package com.chrnie.gomoku
 
 import java.util.*
 
-class GomokuGame private constructor(private val chessboard: Array<Chessman?>) {
+open class GomokuGame {
   companion object {
     const val CHESSBOARD_WIDTH = 15
     const val CHESSBOARD_HEIGHT = 15
@@ -25,9 +25,9 @@ class GomokuGame private constructor(private val chessboard: Array<Chessman?>) {
     private fun indexOf(x: Int, y: Int): Int = CHESSBOARD_WIDTH * y + x
   }
 
-  constructor() : this(arrayOfNulls(CHESSBOARD_WIDTH * CHESSBOARD_HEIGHT))
-
+  private val chessboard: Array<Chessman?> = arrayOfNulls(CHESSBOARD_WIDTH * CHESSBOARD_HEIGHT)
   private val actionQueue = ArrayDeque<Action>()
+
 
   var chessman = Chessman.BLACK
     private set
@@ -46,12 +46,18 @@ class GomokuGame private constructor(private val chessboard: Array<Chessman?>) {
     ensureCoordinate(x, y)
 
     val action = Action(x, y, chessman)
-    val isExecute = action.execute()
-    if (isExecute) {
+    val success = action.execute()
+    if (success) {
       actionQueue.push(action)
+      onPutChessman(action.x, action.y, action.chessman)
     }
-    return isExecute
+    return success
   }
+
+  open fun onPutChessman(x: Int, y: Int, chessman: Chessman) {
+
+  }
+
 
   val canUndo get() = !actionQueue.isEmpty()
 
@@ -62,14 +68,12 @@ class GomokuGame private constructor(private val chessboard: Array<Chessman?>) {
 
     val action = actionQueue.pop()
     action.undo()
+    onUndo(action.x, action.y, action.chessman)
     return true
   }
 
-  fun restart() {
-    chessboard.fill(null)
-    actionQueue.clear()
-    chessman = Chessman.BLACK
-    winner = null
+  open fun onUndo(x: Int, y: Int, chessman: Chessman) {
+
   }
 
   private fun toggleChessman() {
@@ -77,9 +81,9 @@ class GomokuGame private constructor(private val chessboard: Array<Chessman?>) {
   }
 
   private inner class Action(
-    private val x: Int,
-    private val y: Int,
-    private val chessman: Chessman
+    val x: Int,
+    val y: Int,
+    val chessman: Chessman
   ) {
 
     fun execute(): Boolean {
@@ -121,7 +125,7 @@ class GomokuGame private constructor(private val chessboard: Array<Chessman?>) {
     private fun countConnectedChessman(x: Int, y: Int, mapping: CoordMapping): Int {
       var count = 1
 
-      val out = arrayOf(-1, -1)
+      val out = intArrayOf(-1, -1)
 
       for (dX in 1..Int.MAX_VALUE) {
         mapping.map(x, y, dX, 0, out)
@@ -152,21 +156,6 @@ class GomokuGame private constructor(private val chessboard: Array<Chessman?>) {
       }
 
       return count
-    }
-  }
-
-  class Builder {
-
-    private val chessboard = arrayOfNulls<Chessman>(CHESSBOARD_WIDTH * CHESSBOARD_HEIGHT)
-
-    fun putChessman(x: Int, y: Int, chessman: Chessman): Builder {
-      ensureCoordinate(x, y)
-      chessboard[indexOf(x, y)] = chessman
-      return this
-    }
-
-    fun build(): GomokuGame {
-      return GomokuGame(chessboard)
     }
   }
 }

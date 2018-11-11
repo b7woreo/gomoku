@@ -3,4 +3,6 @@ apply plugin: 'kotlin'
 dependencies {
     implementation project(":lib-gomoku")
     implementation lib["kotlin-stdlib"]
+
+    testCompile lib["junit"]
 }
