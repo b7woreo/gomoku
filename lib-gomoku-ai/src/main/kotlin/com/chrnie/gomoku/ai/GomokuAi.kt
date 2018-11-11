@@ -6,13 +6,13 @@ import com.chrnie.gomoku.ai.algorithm.AlphaBetaNode
 
 class GomokuAi(val game: GomokuGame, difficulty: Int) {
 
-    private val depth = difficulty * 2
+  private val depth = difficulty * 2
 
-    init {
-        if (difficulty <= 0) {
-            throw RuntimeException("difficulty must > 0")
-        }
+  init {
+    if (difficulty <= 0) {
+      throw RuntimeException("difficulty must > 0")
     }
+  }
 
   fun next(): Point = if (game.isWin) throw RuntimeException("game is win")
   else game.chessman.let { maximizingPlayer ->
@@ -55,11 +55,11 @@ class GomokuAi(val game: GomokuGame, difficulty: Int) {
 
     override fun enter() {
       game.putChessman(x, y)
-        }
+    }
 
-        override fun exit() {
-            game.undo()
-        }
+    override fun exit() {
+      game.undo()
+    }
   }
 
   private abstract inner class GameNode(private val maximizingPlayer: Chessman) : AlphaBetaNode<GameNode>() {
