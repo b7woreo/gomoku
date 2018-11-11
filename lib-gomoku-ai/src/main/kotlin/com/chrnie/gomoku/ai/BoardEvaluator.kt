@@ -1,6 +1,8 @@
 package com.chrnie.gomoku.ai
 
-import com.chrnie.gomoku.*
+import com.chrnie.gomoku.Chessman
+import com.chrnie.gomoku.CoordMapping
+import com.chrnie.gomoku.GomokuGame
 
 internal object BoardEvaluator {
 
@@ -19,82 +21,91 @@ internal object BoardEvaluator {
 
 private fun statisticsHorizontal(statistics: Statistics, game: GomokuGame) {
   for (y in 0 until GomokuGame.CHESSBOARD_HEIGHT) {
-    statistics(0, y, game::iterateHorizontalChessman, statistics)
+    statistics(game, 0, y, CoordMapping.Rotate0, statistics)
   }
 }
 
 private fun statisticsVertical(statistics: Statistics, game: GomokuGame) {
   for (x in 0 until GomokuGame.CHESSBOARD_WIDTH) {
-    statistics(x, 0, game::iterateVerticalChessman, statistics)
+    statistics(game, x, 0, CoordMapping.Rotate90, statistics)
   }
 }
 
 private fun statisticsDiagonal(statistics: Statistics, game: GomokuGame) {
   for (x in 0 until GomokuGame.CHESSBOARD_WIDTH) {
-    statistics(x, 0, game::iterateDiagonalChessman, statistics)
+    statistics(game, x, GomokuGame.CHESSBOARD_HEIGHT - 1, CoordMapping.Rotate315, statistics)
   }
 
-  for (y in 1 until GomokuGame.CHESSBOARD_HEIGHT) {
-    statistics(0, y, game::iterateDiagonalChessman, statistics)
+  for (y in 0 until GomokuGame.CHESSBOARD_HEIGHT - 1) {
+    statistics(game, 0, y, CoordMapping.Rotate315, statistics)
   }
 }
 
 private fun statisticsInverseDiagonal(statistics: Statistics, game: GomokuGame) {
   for (x in 0 until GomokuGame.CHESSBOARD_WIDTH) {
-    statistics(x, GomokuGame.CHESSBOARD_HEIGHT - 1, game::iterateInverseDiagonalChessman, statistics)
+    statistics(game, x, 0, CoordMapping.Rotate135, statistics)
   }
 
-  for (y in 0 until GomokuGame.CHESSBOARD_HEIGHT - 1) {
-    statistics(0, y, game::iterateInverseDiagonalChessman, statistics)
+  for (y in 1 until GomokuGame.CHESSBOARD_HEIGHT) {
+    statistics(game, GomokuGame.CHESSBOARD_WIDTH - 1, y, CoordMapping.Rotate135, statistics)
   }
 }
 
 private fun statistics(
+  game: GomokuGame,
   x: Int,
   y: Int,
-  iterator: (x: Int, y: Int, positiveDirection: Boolean, (Chessman?) -> Unit) -> Unit,
+  mapping: CoordMapping,
   statistics: Statistics
 ) {
-  var count = 1
+  var count = 0
   var pre: Chessman? = null
   var dead = true
 
-  iterator(x, y, true) iterator@{
-    if (pre == null && it == null) {
-      return@iterator
+  val out = arrayOf(-1, -1)
+  for (dX in 0..Int.MAX_VALUE) {
+    mapping.map(x, y, dX, 0, out)
+    if (!GomokuGame.isCoordinateInBoard(out[0], out[1])) {
+      break
     }
 
-    if (pre == null && it != null) {
+    val cur = game.chessmanAt(out[0], out[1])
+
+    if (pre == null && cur == null) {
+      continue
+    }
+
+    if (pre == null && cur != null) {
       count = 1
-      pre = it
+      pre = cur
       dead = false
-      return@iterator
+      continue
     }
 
-    if (pre != null && it == null) {
-      statistics.increaseCount(pre!!, count, dead)
+    if (pre != null && cur == null) {
+      statistics.increaseCount(pre, count, dead)
       count = 0
-      pre = it
+      pre = cur
       dead = false
-      return@iterator
+      continue
     }
 
-    if (pre != null && pre != it) {
+    if (pre != null && pre != cur) {
       if (!dead) {
-        statistics.increaseCount(pre!!, count, true)
+        statistics.increaseCount(pre, count, true)
       }
       count = 1
-      pre = it
+      pre = cur
       dead = true
-      return@iterator
+      continue
     }
 
-    if (pre != null && pre == it) {
+    if (pre != null && pre == cur) {
       count += 1
-      return@iterator
+      continue
     }
 
-    throw RuntimeException("unknown branch: pre = $pre - current = $it")
+    throw RuntimeException("unknown branch: pre = $pre - current = $cur")
   }
 }
 

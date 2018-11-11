@@ -1,15 +1,17 @@
 package com.chrnie.gomoku.ai
 
-import com.chrnie.gomoku.*
+import com.chrnie.gomoku.Chessman
+import com.chrnie.gomoku.CoordMapping
+import com.chrnie.gomoku.GomokuGame
 
 internal object PointEvaluator {
 
   fun evaluate(game: GomokuGame, chessman: Chessman, x: Int, y: Int): Int {
     listOf(
-      countLiveConnectedChessman(chessman, x, y, game::iterateHorizontalChessman),
-      countLiveConnectedChessman(chessman, x, y, game::iterateVerticalChessman),
-      countLiveConnectedChessman(chessman, x, y, game::iterateDiagonalChessman),
-      countLiveConnectedChessman(chessman, x, y, game::iterateInverseDiagonalChessman)
+      countLiveConnectedChessman(game, chessman, x, y, CoordMapping.Rotate0),
+      countLiveConnectedChessman(game, chessman, x, y, CoordMapping.Rotate45),
+      countLiveConnectedChessman(game, chessman, x, y, CoordMapping.Rotate90),
+      countLiveConnectedChessman(game, chessman, x, y, CoordMapping.Rotate135)
     ).fold(IntArray(3)) { acc, liveCount ->
       when (liveCount) {
         5 -> acc.apply { this[2] += 1 }
@@ -27,35 +29,44 @@ internal object PointEvaluator {
     }
   }
 
-  private inline fun countLiveConnectedChessman(
+  private fun countLiveConnectedChessman(
+    game: GomokuGame,
     chessman: Chessman,
     x: Int,
     y: Int,
-    iterator: (Int, Int, Boolean, (Chessman?) -> Unit) -> Unit
+    mapping: CoordMapping
   ): Int {
-    var count = 0
-    var first: Boolean;
+    var count = 1
     var live = true
+    val out = arrayOf(-1, -1)
 
-    first = true
-    iterator(x, y, true) {
-      if (!first && it != chessman) {
-        live = live && it == null
-        return@iterator
+    for (dX in 1..Int.MAX_VALUE) {
+      mapping.map(x, y, dX, 0, out)
+      if (!GomokuGame.isCoordinateInBoard(out[0], out[1])) {
+        break
       }
 
-      first = false
+      val c = game.chessmanAt(out[0], out[1])
+      if (c != chessman) {
+        live = live && c == null
+        break
+      }
+
       count += 1
     }
 
-    first = true
-    iterator(x, y, false) {
-      if (!first && it != chessman) {
-        live = live && it == null
-        return@iterator
+    for (dX in -1 downTo Int.MIN_VALUE) {
+      mapping.map(x, y, dX, 0, out)
+      if (!GomokuGame.isCoordinateInBoard(out[0], out[1])) {
+        break
       }
 
-      first = false
+      val c = game.chessmanAt(out[0], out[1])
+      if (c != chessman) {
+        live = live && c == null
+        break
+      }
+
       count += 1
     }
 

@@ -8,7 +8,11 @@ class GomokuGame private constructor(private val chessboard: Array<Chessman?>) {
     const val CHESSBOARD_HEIGHT = 15
     const val GOMOKU_COUNT = 5
 
-    internal fun checkCoordinate(x: Int, y: Int) {
+    fun isCoordinateInBoard(x: Int, y: Int): Boolean {
+      return (x in 0..(CHESSBOARD_WIDTH - 1)) && (y in 0..(CHESSBOARD_HEIGHT - 1))
+    }
+
+    internal fun ensureCoordinate(x: Int, y: Int) {
       if (x < 0 || x >= CHESSBOARD_WIDTH) {
         throw RuntimeException("x not in range: 0 - ${CHESSBOARD_WIDTH - 1}, current is: $x")
       }
@@ -34,12 +38,12 @@ class GomokuGame private constructor(private val chessboard: Array<Chessman?>) {
   val isWin get() = winner != null
 
   fun chessmanAt(x: Int, y: Int): Chessman? {
-    checkCoordinate(x, y)
+    ensureCoordinate(x, y)
     return chessboard[indexOf(x, y)]
   }
 
   fun putChessman(x: Int, y: Int): Boolean {
-    checkCoordinate(x, y)
+    ensureCoordinate(x, y)
 
     val action = Action(x, y, chessman)
     val isExecute = action.execute()
@@ -108,10 +112,46 @@ class GomokuGame private constructor(private val chessboard: Array<Chessman?>) {
     }
 
     private fun isWin(x: Int, y: Int): Boolean {
-      return countHorizontalConnectedChessman(x, y) == GOMOKU_COUNT
-          || countVerticalConnectedChessman(x, y) == GOMOKU_COUNT
-          || countDiagonalConnectedChessman(x, y) == GOMOKU_COUNT
-          || countInverseDiagonalConnectedChessman(x, y) == GOMOKU_COUNT
+      return countConnectedChessman(x, y, CoordMapping.Rotate0) == GOMOKU_COUNT
+          || countConnectedChessman(x, y, CoordMapping.Rotate45) == GOMOKU_COUNT
+          || countConnectedChessman(x, y, CoordMapping.Rotate90) == GOMOKU_COUNT
+          || countConnectedChessman(x, y, CoordMapping.Rotate135) == GOMOKU_COUNT
+    }
+
+    private fun countConnectedChessman(x: Int, y: Int, mapping: CoordMapping): Int {
+      var count = 1
+
+      val out = arrayOf(-1, -1)
+
+      for (dX in 1..Int.MAX_VALUE) {
+        mapping.map(x, y, dX, 0, out)
+        if (!isCoordinateInBoard(out[0], out[1])) {
+          break
+        }
+
+        val c = chessmanAt(out[0], out[1])
+        if (c != chessman) {
+          break
+        }
+
+        count += 1
+      }
+
+      for (dX in -1 downTo Int.MIN_VALUE) {
+        mapping.map(x, y, dX, 0, out)
+        if (!isCoordinateInBoard(out[0], out[1])) {
+          break
+        }
+
+        val c = chessmanAt(out[0], out[1])
+        if (c != chessman) {
+          break
+        }
+
+        count += 1
+      }
+
+      return count
     }
   }
 
@@ -120,7 +160,7 @@ class GomokuGame private constructor(private val chessboard: Array<Chessman?>) {
     private val chessboard = arrayOfNulls<Chessman>(CHESSBOARD_WIDTH * CHESSBOARD_HEIGHT)
 
     fun putChessman(x: Int, y: Int, chessman: Chessman): Builder {
-      checkCoordinate(x, y)
+      ensureCoordinate(x, y)
       chessboard[indexOf(x, y)] = chessman
       return this
     }
