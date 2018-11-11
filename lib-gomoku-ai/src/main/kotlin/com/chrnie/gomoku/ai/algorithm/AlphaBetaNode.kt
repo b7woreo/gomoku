@@ -12,7 +12,7 @@ abstract class AlphaBetaNode<NODE : AlphaBetaNode<NODE>> {
 
   protected abstract fun child(): Iterable<NODE>
 
-  fun alphaBeta(depth: Int): List<NODE> {
+  fun alphaBeta(depth: Int): List<NODE> = runInLifecycle {
     return child().map { Pair(it, it.alphaBeta(depth - 1, Int.MIN_VALUE, Int.MAX_VALUE, false)) }
       .let {
         it.asSequence()
