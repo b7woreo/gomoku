@@ -11,8 +11,8 @@ class BoardTest {
         val boardWidth = 15
         val boardHeight = 15
         val board0 = Board(boardWidth, boardHeight)
-        for (x in 0..15) {
-            for (y in 0..15) {
+        for (x in 0..14) {
+            for (y in 0..14) {
                 assertEquals(null, board0[x, y])
             }
         }

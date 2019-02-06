@@ -15,8 +15,10 @@ internal class BitBoard private constructor(
         */
         private const val ADDRESS_CHESSMAN_PER_WORD = 5
 
-        private const val MASK_CHESSMAN_IN_USE = 0b10L
-        private const val MASK_CHESSMAN_IS_BLACK = 0b01L
+        private const val CHESSMAN_NONE = 0b00L
+        private const val CHESSMAN_BLACK = 0b01L
+        private const val CHESSMAN_WHITE = 0b10L
+        private const val CHESSMAN_MASK = 0b11L
     }
 
     private val _words: LongArray
@@ -36,9 +38,22 @@ internal class BitBoard private constructor(
         val chessmanIndex = chessmanIndex(x, y)
         val wordIndex = wordIndex(chessmanIndex)
         val word = _words[wordIndex]
+        val shift = chessmanIndex shl 1
+        val mask = word and (CHESSMAN_MASK shl shift)
 
-        if ((word and MASK_CHESSMAN_IN_USE shl (chessmanIndex shl 1)) == 0L) return null
-        return if ((word and MASK_CHESSMAN_IS_BLACK shl (chessmanIndex shl 1)) != 0L) Chessman.BLACK else Chessman.WHITE
+        if (mask xor (CHESSMAN_NONE shl shift) == 0L) {
+            return null
+        }
+
+        if (mask xor (CHESSMAN_BLACK shl shift) == 0L) {
+            return Chessman.BLACK
+        }
+
+        if (mask xor (CHESSMAN_WHITE shl shift) == 0L) {
+            return Chessman.WHITE
+        }
+
+        throw IllegalStateException("Unknown mask: $mask")
     }
 
     override fun put(x: Int, y: Int, chessman: Chessman?): Board {
@@ -53,25 +68,19 @@ internal class BitBoard private constructor(
 
         val chessmanIndex = chessmanIndex(x, y)
         val wordIndex = wordIndex(chessmanIndex)
+        val shift = chessmanIndex shl 1
+
+        newWords[wordIndex] = newWords[wordIndex] and (CHESSMAN_MASK shl shift).inv()
 
         when (chessman) {
             null -> {
-                newWords[wordIndex] = newWords[wordIndex] and
-                        (MASK_CHESSMAN_IN_USE shl (chessmanIndex shl 1)).inv()
+                newWords[wordIndex] = newWords[wordIndex] or (CHESSMAN_NONE shl shift)
             }
-
             Chessman.BLACK -> {
-                newWords[wordIndex] = newWords[wordIndex] or
-                        (MASK_CHESSMAN_IN_USE shl (chessmanIndex shl 1))
-                newWords[wordIndex] = newWords[wordIndex] or
-                        (MASK_CHESSMAN_IS_BLACK shl (chessmanIndex shl 1))
+                newWords[wordIndex] = newWords[wordIndex] or (CHESSMAN_BLACK shl shift)
             }
-
             Chessman.WHITE -> {
-                newWords[wordIndex] = newWords[wordIndex] or
-                        (MASK_CHESSMAN_IN_USE shl (chessmanIndex shl 1))
-                newWords[wordIndex] = newWords[wordIndex] and
-                        (MASK_CHESSMAN_IS_BLACK shl (chessmanIndex shl 1)).inv()
+                newWords[wordIndex] = newWords[wordIndex] or (CHESSMAN_WHITE shl shift)
             }
         }
 
@@ -79,7 +88,7 @@ internal class BitBoard private constructor(
     }
 
     private fun ensureCoordinateInBounds(x: Int, y: Int) {
-        if (x !in 0..(width - 1) || y !in 0..(height - 1)) {
+        if (x !in 0 until width || y !in 0 until height) {
             throw CoordinateOutOfBounds(x, y, width, height)
         }
     }
