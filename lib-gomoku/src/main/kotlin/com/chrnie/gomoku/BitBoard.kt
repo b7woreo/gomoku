@@ -31,7 +31,7 @@ internal class BitBoard private constructor(
     internal constructor(width: Int, height: Int) : this(width, height, null)
 
     override operator fun get(x: Int, y: Int): Chessman? {
-        if (x !in 0..width || y !in 0..height) throw CoordinateOutOfBounds(x, y, width, height)
+        ensureCoordinateInBounds(x, y)
 
         val chessmanIndex = chessmanIndex(x, y)
         val wordIndex = wordIndex(chessmanIndex)
@@ -42,6 +42,8 @@ internal class BitBoard private constructor(
     }
 
     override fun put(x: Int, y: Int, chessman: Chessman?): Board {
+        ensureCoordinateInBounds(x, y)
+
         val curChessman = get(x, y)
         if (curChessman == chessman) return this
 
@@ -74,6 +76,12 @@ internal class BitBoard private constructor(
         }
 
         return BitBoard(width, height, newWords)
+    }
+
+    private fun ensureCoordinateInBounds(x: Int, y: Int) {
+        if (x !in 0..(width - 1) || y !in 0..(height - 1)) {
+            throw CoordinateOutOfBounds(x, y, width, height)
+        }
     }
 
     private fun chessmanIndex(x: Int, y: Int): Int {
