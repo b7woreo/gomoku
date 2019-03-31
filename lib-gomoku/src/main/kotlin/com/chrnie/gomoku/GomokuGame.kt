@@ -25,19 +25,19 @@ open class GomokuGame {
     private fun indexOf(x: Int, y: Int): Int = CHESSBOARD_WIDTH * y + x
   }
 
-  private val chessboard: Array<Chessman?> = arrayOfNulls(CHESSBOARD_WIDTH * CHESSBOARD_HEIGHT)
+  private val chessboard: Array<Stone?> = arrayOfNulls(CHESSBOARD_WIDTH * CHESSBOARD_HEIGHT)
   private val actionQueue = ArrayDeque<Action>()
 
 
-  var chessman = Chessman.BLACK
+  var chessman = Stone.BLACK
     private set
 
-  var winner: Chessman? = null
+  var winner: Stone? = null
     private set
 
   val isWin get() = winner != null
 
-  fun chessmanAt(x: Int, y: Int): Chessman? {
+  fun chessmanAt(x: Int, y: Int): Stone? {
     ensureCoordinate(x, y)
     return chessboard[indexOf(x, y)]
   }
@@ -49,12 +49,12 @@ open class GomokuGame {
     val success = action.execute()
     if (success) {
       actionQueue.push(action)
-      onPutChessman(action.x, action.y, action.chessman)
+      onPutChessman(action.x, action.y, action.stone)
     }
     return success
   }
 
-  open fun onPutChessman(x: Int, y: Int, chessman: Chessman) {
+  open fun onPutChessman(x: Int, y: Int, stone: Stone) {
 
   }
 
@@ -68,22 +68,22 @@ open class GomokuGame {
 
     val action = actionQueue.pop()
     action.undo()
-    onUndo(action.x, action.y, action.chessman)
+    onUndo(action.x, action.y, action.stone)
     return true
   }
 
-  open fun onUndo(x: Int, y: Int, chessman: Chessman) {
+  open fun onUndo(x: Int, y: Int, stone: Stone) {
 
   }
 
   private fun toggleChessman() {
-    this.chessman = if (chessman == Chessman.BLACK) Chessman.WHITE else Chessman.BLACK
+    this.chessman = if (chessman == Stone.BLACK) Stone.WHITE else Stone.BLACK
   }
 
   private inner class Action(
     val x: Int,
     val y: Int,
-    val chessman: Chessman
+    val stone: Stone
   ) {
 
     fun execute(): Boolean {
@@ -96,10 +96,10 @@ open class GomokuGame {
         return false
       }
 
-      chessboard[index] = chessman
+      chessboard[index] = stone
 
       if (isWin(x, y)) {
-        winner = chessman
+        winner = stone
       }
       toggleChessman()
       return true
@@ -134,7 +134,7 @@ open class GomokuGame {
         }
 
         val c = chessmanAt(out[0], out[1])
-        if (c != chessman) {
+        if (c != stone) {
           break
         }
 
@@ -148,7 +148,7 @@ open class GomokuGame {
         }
 
         val c = chessmanAt(out[0], out[1])
-        if (c != chessman) {
+        if (c != stone) {
           break
         }
 

@@ -1,17 +1,17 @@
 package com.chrnie.gomoku.ai
 
-import com.chrnie.gomoku.Chessman
+import com.chrnie.gomoku.Stone
 import com.chrnie.gomoku.CoordMapping
 import com.chrnie.gomoku.GomokuGame
 
 internal object PointEvaluator {
 
-  fun evaluate(game: GomokuGame, chessman: Chessman, x: Int, y: Int): Int {
+  fun evaluate(game: GomokuGame, stone: Stone, x: Int, y: Int): Int {
     listOf(
-      countLiveConnectedChessman(game, chessman, x, y, CoordMapping.Rotate0),
-      countLiveConnectedChessman(game, chessman, x, y, CoordMapping.Rotate45),
-      countLiveConnectedChessman(game, chessman, x, y, CoordMapping.Rotate90),
-      countLiveConnectedChessman(game, chessman, x, y, CoordMapping.Rotate135)
+      countLiveConnectedChessman(game, stone, x, y, CoordMapping.Rotate0),
+      countLiveConnectedChessman(game, stone, x, y, CoordMapping.Rotate45),
+      countLiveConnectedChessman(game, stone, x, y, CoordMapping.Rotate90),
+      countLiveConnectedChessman(game, stone, x, y, CoordMapping.Rotate135)
     ).fold(IntArray(3)) { acc, liveCount ->
       when (liveCount) {
         5 -> acc.apply { this[2] += 1 }
@@ -30,11 +30,11 @@ internal object PointEvaluator {
   }
 
   private fun countLiveConnectedChessman(
-    game: GomokuGame,
-    chessman: Chessman,
-    x: Int,
-    y: Int,
-    mapping: CoordMapping
+          game: GomokuGame,
+          stone: Stone,
+          x: Int,
+          y: Int,
+          mapping: CoordMapping
   ): Int {
     var count = 1
     var live = true
@@ -47,7 +47,7 @@ internal object PointEvaluator {
       }
 
       val c = game.chessmanAt(out[0], out[1])
-      if (c != chessman) {
+      if (c != stone) {
         live = live && c == null
         break
       }
@@ -62,7 +62,7 @@ internal object PointEvaluator {
       }
 
       val c = game.chessmanAt(out[0], out[1])
-      if (c != chessman) {
+      if (c != stone) {
         live = live && c == null
         break
       }

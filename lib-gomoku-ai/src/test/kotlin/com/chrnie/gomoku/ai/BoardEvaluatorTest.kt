@@ -1,6 +1,6 @@
 package com.chrnie.gomoku.ai
 
-import com.chrnie.gomoku.Chessman
+import com.chrnie.gomoku.Stone
 import com.chrnie.gomoku.GomokuGame
 import com.chrnie.gomoku.ai.board.evaluator.BoardEvaluator
 import org.junit.Assert.assertEquals
@@ -26,7 +26,7 @@ class BoardEvaluatorTest {
     gomokuGame.putChessman(6, 7)
     gomokuGame.putChessman(7, 5)
 
-    val result = BoardEvaluator.evaluate(gomokuGame, Chessman.WHITE)
+    val result = BoardEvaluator.evaluate(gomokuGame, Stone.WHITE)
     assertEquals(-830, result)
   }
 }

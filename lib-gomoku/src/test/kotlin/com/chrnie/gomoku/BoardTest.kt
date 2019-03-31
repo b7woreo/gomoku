@@ -17,13 +17,13 @@ class BoardTest {
             }
         }
 
-        val board1 = board0.put(0, 0, Chessman.WHITE)
+        val board1 = board0.put(0, 0, Stone.WHITE)
         assertEquals(null, board0[0, 0])
-        assertEquals(Chessman.WHITE, board1[0, 0])
+        assertEquals(Stone.WHITE, board1[0, 0])
 
-        val board2 = board0.put(0, 0, Chessman.BLACK)
+        val board2 = board0.put(0, 0, Stone.BLACK)
         assertEquals(null, board0[0, 0])
-        assertEquals(Chessman.BLACK, board2[0, 0])
+        assertEquals(Stone.BLACK, board2[0, 0])
 
         val board3 = board1.put(0, 0, null)
         assertEquals(null, board3[0, 0])
@@ -49,7 +49,7 @@ class BoardTest {
             for (i in 0..1000000) {
                 board = board.put(
                     random.nextInt(15), random.nextInt(15),
-                    if (random.nextBoolean()) null else Chessman.WHITE
+                    if (random.nextBoolean()) null else Stone.WHITE
                 )
             }
         }

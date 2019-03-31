@@ -6,15 +6,15 @@ interface Board {
 
     val height: Int
 
-    operator fun get(x: Int, y: Int): Chessman?
+    operator fun get(x: Int, y: Int): Stone?
 
-    fun put(x: Int, y: Int, chessman: Chessman?): Board
+    fun put(x: Int, y: Int, stone: Stone?): Board
 
 }
 
 fun Board(width: Int, height: Int): Board = BitBoard(width, height)
 
-enum class Chessman {
+enum class Stone {
     BLACK,
     WHITE
 }

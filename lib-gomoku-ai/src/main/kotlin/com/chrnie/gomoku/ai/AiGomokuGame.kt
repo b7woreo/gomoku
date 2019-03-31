@@ -1,6 +1,6 @@
 package com.chrnie.gomoku.ai
 
-import com.chrnie.gomoku.Chessman
+import com.chrnie.gomoku.Stone
 import com.chrnie.gomoku.GomokuGame
 import com.chrnie.gomoku.ai.algorithm.AlphaBetaNode
 import com.chrnie.gomoku.ai.board.evaluator.BoardEvaluator
@@ -33,25 +33,25 @@ class AiGomokuGame(difficulty: Int) : GomokuGame() {
     }
   }
 
-  override fun onPutChessman(x: Int, y: Int, chessman: Chessman) {
-    hash = when (chessman) {
-      Chessman.WHITE -> {
+  override fun onPutChessman(x: Int, y: Int, stone: Stone) {
+    hash = when (stone) {
+      Stone.WHITE -> {
         hash xor whiteHash[indexOf(x, y)]
       }
 
-      Chessman.BLACK -> {
+      Stone.BLACK -> {
         hash xor blackHash[indexOf(x, y)]
       }
     }
   }
 
-  override fun onUndo(x: Int, y: Int, chessman: Chessman) {
-    hash = when (chessman) {
-      Chessman.WHITE -> {
+  override fun onUndo(x: Int, y: Int, stone: Stone) {
+    hash = when (stone) {
+      Stone.WHITE -> {
         hash xor whiteHash[indexOf(x, y)]
       }
 
-      Chessman.BLACK -> {
+      Stone.BLACK -> {
         hash xor blackHash[indexOf(x, y)]
       }
     }
@@ -81,7 +81,7 @@ class AiGomokuGame(difficulty: Int) : GomokuGame() {
         .let { it[(Math.random() * it.size).toInt()] }
     }
 
-  private inner class StartNode(maximizingPlayer: Chessman) : GameNode(maximizingPlayer) {
+  private inner class StartNode(maximizingPlayer: Stone) : GameNode(maximizingPlayer) {
 
     private var hash: Int? = null
 
@@ -106,9 +106,9 @@ class AiGomokuGame(difficulty: Int) : GomokuGame() {
   }
 
   private inner class LeafNode(
-    maximizingPlayer: Chessman,
-    internal val x: Int,
-    internal val y: Int
+          maximizingPlayer: Stone,
+          internal val x: Int,
+          internal val y: Int
   ) : GameNode(maximizingPlayer) {
 
     private var hash: Int? = null
@@ -134,7 +134,7 @@ class AiGomokuGame(difficulty: Int) : GomokuGame() {
     }
   }
 
-  private abstract inner class GameNode(private val maximizingPlayer: Chessman) : AlphaBetaNode<GameNode>() {
+  private abstract inner class GameNode(private val maximizingPlayer: Stone) : AlphaBetaNode<GameNode>() {
 
     private val pointEvaluator = PointEvaluator
     private val boardEvaluator = BoardEvaluator
@@ -151,7 +151,7 @@ class AiGomokuGame(difficulty: Int) : GomokuGame() {
     override fun child(): Iterable<GameNode> =
       chessman.let { findPutChessmanPoint(it).map { (x, y) -> LeafNode(maximizingPlayer, x, y) } }
 
-    private fun findPutChessmanPoint(player: Chessman): Iterable<Point> =
+    private fun findPutChessmanPoint(player: Stone): Iterable<Point> =
       (0 until GomokuGame.CHESSBOARD_WIDTH).flatMap { x ->
         (0 until GomokuGame.CHESSBOARD_HEIGHT)
           .filter { y -> chessmanAt(x, y) != null }

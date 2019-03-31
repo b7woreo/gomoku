@@ -19,7 +19,7 @@ open class BoardBenchmark {
     }
 
     @Benchmark
-    fun putStone() = board.put(0, 0, Chessman.BLACK)
+    fun putStone() = board.put(0, 0, Stone.BLACK)
 
     @Benchmark
     fun getStone() = board.get(0, 0)
