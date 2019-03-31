@@ -33,7 +33,7 @@ class BoardTest {
         Board(0, 0)
     }
 
-    @Test(expected = CoordinateOutOfBounds::class)
+    @Test(expected = CoordinateOutOfBoundsException::class)
     fun testGetException() {
         val board = Board(1, 1)
         board[1, 1]

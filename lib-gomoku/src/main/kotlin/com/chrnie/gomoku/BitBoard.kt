@@ -89,7 +89,7 @@ internal class BitBoard private constructor(
 
     private fun ensureCoordinateInBounds(x: Int, y: Int) {
         if (x !in 0 until width || y !in 0 until height) {
-            throw CoordinateOutOfBounds(x, y, width, height)
+            throw CoordinateOutOfBoundsException(x, y, width, height)
         }
     }
 
