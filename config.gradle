@@ -12,14 +12,15 @@ ext {
 
 def kotlin_version = '1.3.21'
 def support_version = '28.0.0'
+def jmh_version = '1.21'
 
 ext.plugin = [
         "android": "com.android.tools.build:gradle:3.2.1",
-        "kotlin" : "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        "kotlin" : "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version",
 ]
 
 ext.lib = [
-        "kotlin-stdlib"       : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version",
+        "kotlin-stdlib"            : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version",
         "kotlin-coroutines-android":"org.jetbrains.kotlinx:kotlinx-coroutines-android:0.23.3",
         "appcompat"                : "com.android.support:appcompat-v7:$support_version",
         "lifecycle-extensions"     : "android.arch.lifecycle:extensions:1.1.1",
@@ -27,5 +28,7 @@ ext.lib = [
         "constraint-layout"        : "com.android.support.constraint:constraint-layout:1.0.2",
         "cardview"                 : "com.android.support:cardview-v7:$support_version",
         "play-services-ads"        : "com.google.android.gms:play-services-ads:15.0.0",
-        "junit"                    : "junit:junit:4.11"
+        "junit"                    : "junit:junit:4.11",
+        "jmh-core"                 : "org.openjdk.jmh:jmh-core:$jmh_version",
+        "jmh-generator"            : "org.openjdk.jmh:jmh-generator-annprocess:$jmh_version",
 ]

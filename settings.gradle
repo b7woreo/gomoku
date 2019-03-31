@@ -1,1 +1,2 @@
-include ':lib-gomoku', ':lib-gomoku-ai', ':app-gomoku'
+include ':lib-gomoku'
+include ':lib-gomoku-ai'
