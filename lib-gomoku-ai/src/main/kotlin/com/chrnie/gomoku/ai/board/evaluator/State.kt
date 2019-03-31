@@ -1,6 +1,6 @@
 package com.chrnie.gomoku.ai.board.evaluator
 
-import com.chrnie.gomoku.Chessman
+import com.chrnie.gomoku.Stone
 
 sealed class State {
 
@@ -8,36 +8,36 @@ sealed class State {
     val START: State = StartState
 
     private val fsmTable = mapOf(
-      Chessman.WHITE to mapOf(
+      Stone.WHITE to mapOf(
         true to mapOf(
-          1 to ChessmanState(Chessman.WHITE, 1, true),
-          2 to ChessmanState(Chessman.WHITE, 2, true),
-          3 to ChessmanState(Chessman.WHITE, 3, true),
-          4 to ChessmanState(Chessman.WHITE, 4, true),
-          5 to ChessmanState(Chessman.WHITE, 5, true)
+          1 to ChessmanState(Stone.WHITE, 1, true),
+          2 to ChessmanState(Stone.WHITE, 2, true),
+          3 to ChessmanState(Stone.WHITE, 3, true),
+          4 to ChessmanState(Stone.WHITE, 4, true),
+          5 to ChessmanState(Stone.WHITE, 5, true)
         ),
         false to mapOf(
-          1 to ChessmanState(Chessman.WHITE, 1, false),
-          2 to ChessmanState(Chessman.WHITE, 2, false),
-          3 to ChessmanState(Chessman.WHITE, 3, false),
-          4 to ChessmanState(Chessman.WHITE, 4, false),
-          5 to ChessmanState(Chessman.WHITE, 5, false)
+          1 to ChessmanState(Stone.WHITE, 1, false),
+          2 to ChessmanState(Stone.WHITE, 2, false),
+          3 to ChessmanState(Stone.WHITE, 3, false),
+          4 to ChessmanState(Stone.WHITE, 4, false),
+          5 to ChessmanState(Stone.WHITE, 5, false)
         )
       ),
-      Chessman.BLACK to mapOf(
+      Stone.BLACK to mapOf(
         true to mapOf(
-          1 to ChessmanState(Chessman.BLACK, 1, true),
-          2 to ChessmanState(Chessman.BLACK, 2, true),
-          3 to ChessmanState(Chessman.BLACK, 3, true),
-          4 to ChessmanState(Chessman.BLACK, 4, true),
-          5 to ChessmanState(Chessman.BLACK, 5, true)
+          1 to ChessmanState(Stone.BLACK, 1, true),
+          2 to ChessmanState(Stone.BLACK, 2, true),
+          3 to ChessmanState(Stone.BLACK, 3, true),
+          4 to ChessmanState(Stone.BLACK, 4, true),
+          5 to ChessmanState(Stone.BLACK, 5, true)
         ),
         false to mapOf(
-          1 to ChessmanState(Chessman.BLACK, 1, false),
-          2 to ChessmanState(Chessman.BLACK, 2, false),
-          3 to ChessmanState(Chessman.BLACK, 3, false),
-          4 to ChessmanState(Chessman.BLACK, 4, false),
-          5 to ChessmanState(Chessman.BLACK, 5, false)
+          1 to ChessmanState(Stone.BLACK, 1, false),
+          2 to ChessmanState(Stone.BLACK, 2, false),
+          3 to ChessmanState(Stone.BLACK, 3, false),
+          4 to ChessmanState(Stone.BLACK, 4, false),
+          5 to ChessmanState(Stone.BLACK, 5, false)
         )
       )
     )
@@ -45,8 +45,8 @@ sealed class State {
 
   abstract fun next(input: Input, output: Output): State
 
-  protected fun fsm(chessman: Chessman, count: Int, dead: Boolean): State {
-    return fsmTable.let { it[chessman] }?.let { it[dead] }?.let { it[count] }
+  protected fun fsm(stone: Stone, count: Int, dead: Boolean): State {
+    return fsmTable.let { it[stone] }?.let { it[dead] }?.let { it[count] }
       ?: throw RuntimeException("can not find match fsm")
   }
 
@@ -62,14 +62,14 @@ sealed class State {
     private var blackScore = 0
     private var whiteScore = 0
 
-    operator fun get(chessman: Chessman) = when (chessman) {
-      Chessman.BLACK -> blackScore
-      Chessman.WHITE -> whiteScore
+    operator fun get(stone: Stone) = when (stone) {
+      Stone.BLACK -> blackScore
+      Stone.WHITE -> whiteScore
     }
 
-    operator fun set(chessman: Chessman, score: Int) = when (chessman) {
-      Chessman.BLACK -> blackScore = score
-      Chessman.WHITE -> whiteScore = score
+    operator fun set(stone: Stone, score: Int) = when (stone) {
+      Stone.BLACK -> blackScore = score
+      Stone.WHITE -> whiteScore = score
     }
   }
 }
@@ -78,8 +78,8 @@ private object StartState : State() {
 
   override fun next(input: Input, output: Output): State = when (input) {
     Input.NONE -> NoneState
-    Input.BLACK -> fsm(Chessman.BLACK, 1, true)
-    Input.WHITE -> fsm(Chessman.WHITE, 1, true)
+    Input.BLACK -> fsm(Stone.BLACK, 1, true)
+    Input.WHITE -> fsm(Stone.WHITE, 1, true)
     Input.END -> throw RuntimeException("can not input end to start fsm")
   }
 
@@ -89,14 +89,14 @@ private object NoneState : State() {
 
   override fun next(input: Input, output: Output): State = when (input) {
     Input.NONE -> NoneState
-    Input.BLACK -> fsm(Chessman.BLACK, 1, false)
-    Input.WHITE -> fsm(Chessman.WHITE, 1, false)
+    Input.BLACK -> fsm(Stone.BLACK, 1, false)
+    Input.WHITE -> fsm(Stone.WHITE, 1, false)
     Input.END -> EndState
   }
 
 }
 
-private class ChessmanState(val chessman: Chessman, val count: Int, val dead: Boolean) : State() {
+private class ChessmanState(val stone: Stone, val count: Int, val dead: Boolean) : State() {
 
   companion object {
     private val scoreTable = mapOf(
@@ -115,25 +115,25 @@ private class ChessmanState(val chessman: Chessman, val count: Int, val dead: Bo
 
   override fun next(input: Input, output: Output): State = when (input) {
     Input.NONE -> {
-      output[chessman] += findScore(count, dead)
+      output[stone] += findScore(count, dead)
       NoneState
     }
     Input.WHITE -> {
-      if (chessman == Chessman.WHITE) fsm(Chessman.WHITE, count + 1, dead)
+      if (stone == Stone.WHITE) fsm(Stone.WHITE, count + 1, dead)
       else {
-        if (!dead) output[chessman] += findScore(count, true)
-        fsm(Chessman.WHITE, 1, true)
+        if (!dead) output[stone] += findScore(count, true)
+        fsm(Stone.WHITE, 1, true)
       }
     }
     Input.BLACK -> {
-      if (chessman == Chessman.BLACK) fsm(Chessman.BLACK, count + 1, dead)
+      if (stone == Stone.BLACK) fsm(Stone.BLACK, count + 1, dead)
       else {
-        if (!dead) output[chessman] += findScore(count, true)
-        fsm(Chessman.BLACK, 1, true)
+        if (!dead) output[stone] += findScore(count, true)
+        fsm(Stone.BLACK, 1, true)
       }
     }
     Input.END -> {
-      if (!dead) output[chessman] += findScore(count, true)
+      if (!dead) output[stone] += findScore(count, true)
       EndState
     }
   }

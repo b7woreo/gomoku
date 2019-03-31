@@ -1,20 +1,20 @@
 package com.chrnie.gomoku.ai.board.evaluator
 
-import com.chrnie.gomoku.Chessman
+import com.chrnie.gomoku.Stone
 import com.chrnie.gomoku.CoordMapping
 import com.chrnie.gomoku.GomokuGame
 
 internal object BoardEvaluator {
 
-  fun evaluate(game: GomokuGame, maximizingPlayer: Chessman): Int = with(State.Output()) {
+  fun evaluate(game: GomokuGame, maximizingPlayer: Stone): Int = with(State.Output()) {
     statisticsHorizontal(this, game)
     statisticsVertical(this, game)
     statisticsDiagonal(this, game)
     statisticsInverseDiagonal(this, game)
 
     return when (maximizingPlayer) {
-      Chessman.BLACK -> this[Chessman.BLACK] - this[Chessman.WHITE]
-      Chessman.WHITE -> this[Chessman.WHITE] - this[Chessman.BLACK]
+      Stone.BLACK -> this[Stone.BLACK] - this[Stone.WHITE]
+      Stone.WHITE -> this[Stone.WHITE] - this[Stone.BLACK]
     }
   }
 }
@@ -70,8 +70,8 @@ private fun statistics(
     val chessman = game.chessmanAt(x, y)
     val input = when (chessman) {
       null -> State.Input.NONE
-      Chessman.BLACK -> State.Input.BLACK
-      Chessman.WHITE -> State.Input.WHITE
+      Stone.BLACK -> State.Input.BLACK
+      Stone.WHITE -> State.Input.WHITE
     }
     state = state.next(input, output)
   }
