@@ -2,7 +2,6 @@ package com.chrnie.gomoku
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.util.*
 
 class BoardTest {
 
@@ -31,38 +30,13 @@ class BoardTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun testConstructException() {
-        Board(-1, -1)
+        Board(0, 0)
     }
 
     @Test(expected = CoordinateOutOfBounds::class)
     fun testGetException() {
         val board = Board(1, 1)
         board[1, 1]
-    }
-
-    @Test
-    fun testBoardPerformance() {
-        val random = Random()
-        var board = Board(15, 15)
-
-        val time = timer("board") {
-            for (i in 0..1000000) {
-                board = board.put(
-                    random.nextInt(15), random.nextInt(15),
-                    if (random.nextBoolean()) null else Stone.WHITE
-                )
-            }
-        }
-
-        assertEquals(true, time < 250L)
-    }
-
-    private inline fun timer(tag: String, block: () -> Unit): Long {
-        val startTime = System.currentTimeMillis()
-        block()
-        val time = System.currentTimeMillis() - startTime
-        println("$tag coast: $time")
-        return time
     }
 }
 

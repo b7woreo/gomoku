@@ -24,7 +24,7 @@ internal class BitBoard private constructor(
     private val _words: LongArray
 
     init {
-        if (width < 0 || height < 0) throw IllegalArgumentException("Board width and height must >= 0, current is [$width, $height]")
+        if (width <= 0 || height <= 0) throw IllegalArgumentException("Board width and height must > 0, current is [$width, $height]")
 
         val chessmanIndex = chessmanIndex(width - 1, height - 1)
         _words = words ?: LongArray(wordIndex(chessmanIndex) + 1)
