@@ -1,0 +1,2 @@
+include ':gomoku'
+include ':gomoku-ai'

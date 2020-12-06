@@ -1,0 +1,38 @@
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'jacoco'
+
+sourceSets {
+    jmh {
+        compileClasspath += sourceSets.main.runtimeClasspath
+        runtimeClasspath += sourceSets.main.runtimeClasspath
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.5"
+}
+
+dependencies {
+    testImplementation lib["junit"]
+    jmhImplementation lib["jmh-core"]
+    kaptJmh lib["jmh-generator"]
+}
+
+task jmh(type: JavaExec) {
+    classpath = sourceSets.jmh.runtimeClasspath
+    main = 'org.openjdk.jmh.Main'
+}
+
+test {
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        xml.enabled false
+        csv.enabled false
+    }
+}
