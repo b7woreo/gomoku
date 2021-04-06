@@ -1,16 +1,18 @@
 buildscript {
-    apply from: './config.gradle'
-
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath rootProject.plugin["kotlin"]
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.32"
+        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath 'androidx.benchmark:benchmark-gradle-plugin:1.0.0'
     }
 }
 
 allprojects {
     repositories {
+        google()
         jcenter()
     }
 }
