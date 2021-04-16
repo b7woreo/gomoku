@@ -38,6 +38,51 @@ class BoardTest {
         val board = Board(1, 1)
         board[1, 1]
     }
+    
+    @Test
+    fun testToBoard() {
+        """
+            . o x 
+            . x o 
+        """.trimIndent()
+            .toBoard(15, 15, HorizontalAlign.LEFT, VerticalAlign.TOP)
+            .also {
+                assertEquals(null, it[0, 0])
+                assertEquals(Stone.WHITE, it[1, 0])
+                assertEquals(Stone.BLACK, it[2, 0])
+                assertEquals(null, it[0, 1])
+                assertEquals(Stone.BLACK, it[1, 1])
+                assertEquals(Stone.WHITE, it[2, 1])
+            }
+
+        """
+            . o x 
+            . x o 
+        """.trimIndent()
+            .toBoard(15, 15)
+            .also {
+                assertEquals(null, it[6, 6])
+                assertEquals(Stone.WHITE, it[7, 6])
+                assertEquals(Stone.BLACK, it[8, 6])
+                assertEquals(null, it[6, 7])
+                assertEquals(Stone.BLACK, it[7, 7])
+                assertEquals(Stone.WHITE, it[8, 7])
+            }
+
+        """
+            . o x 
+            . x o 
+        """.trimIndent()
+            .toBoard(15, 15, HorizontalAlign.RIGHT, VerticalAlign.BOTTOM)
+            .also {
+                assertEquals(null, it[12, 13])
+                assertEquals(Stone.WHITE, it[13, 13])
+                assertEquals(Stone.BLACK, it[14, 13])
+                assertEquals(null, it[12, 14])
+                assertEquals(Stone.BLACK, it[13, 14])
+                assertEquals(Stone.WHITE, it[14, 14])
+            }
+    }
 }
 
 
