@@ -100,4 +100,16 @@ internal class BitBoard private constructor(
     private fun wordIndex(chessmanIndex: Int): Int {
         return chessmanIndex shr ADDRESS_STONE_PER_WORD
     }
+
+    override fun toString(): String {
+        return (0 until height).joinToString(separator = "\n") { y ->
+            (0 until width).joinToString(separator = " ") { x ->
+                when (get(x, y)) {
+                    Stone.BLACK -> "x"
+                    Stone.WHITE -> "o"
+                    null -> "."
+                }
+            }
+        }
+    }
 }

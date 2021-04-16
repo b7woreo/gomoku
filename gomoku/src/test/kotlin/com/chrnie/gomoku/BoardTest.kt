@@ -83,6 +83,23 @@ class BoardTest {
                 assertEquals(Stone.WHITE, it[14, 14])
             }
     }
+    
+    @Test
+    fun testToString() {
+        val board = Board(4, 4)
+            .put(1, 1, Stone.BLACK)
+            .put(2, 2, Stone.WHITE)
+        
+        assertEquals(
+            """
+               . . . .
+               . x . .
+               . . o .
+               . . . .
+            """.trimIndent(),
+            board.toString()
+        )
+    }
 }
 
 
