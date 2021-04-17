@@ -93,20 +93,6 @@ internal class LinkedGomoku private constructor(
         return count
     }
 
-    override fun toString(): String {
-        return buildString {
-            for (y in 0 until Gomoku.BOARD_WIDTH) {
-                for (x in 0 until Gomoku.BOARD_HEIGHT) {
-                    when (board[x, y]) {
-                        Stone.WHITE -> append('o')
-                        Stone.BLACK -> append('x')
-                        null -> append(' ')
-                    }
-                }
-
-                append('\n')
-            }
-        }
-    }
+    override fun toString(): String  = board.toString()
 
 }

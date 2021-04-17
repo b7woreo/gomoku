@@ -155,5 +155,29 @@ class GomokuTest {
         Gomoku().put(1, 1)
                 .put(1, 1)
     }
+    
+    @Test(expected = IllegalArgumentException::class)
+    fun `test toGomoku() throw if string is invalid`() {
+        """
+           x o
+           o .
+        """.trimIndent()
+            .toGomoku()
+    }
+    
+    @Test
+    fun `test toGomoku()`(){
+        """
+           x o
+           x . 
+        """.trimIndent()
+            .toGomoku(HorizontalAlign.LEFT, VerticalAlign.TOP)
+            .run {
+                assertEquals(Stone.BLACK, this.board[0, 0])
+                assertEquals(Stone.BLACK, this.board[0, 1])
+                assertEquals(Stone.WHITE, this.board[1, 0])
+                assertEquals(null, this.board[1, 1])
+            }
+    }
 
 }
