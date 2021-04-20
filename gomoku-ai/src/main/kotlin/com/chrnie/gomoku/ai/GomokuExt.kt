@@ -8,7 +8,7 @@ import com.chrnie.gomoku.ai.algorithm.AlphaBetaNode
 
 fun Gomoku.next(depth: Int): List<Coordinate> {
     return GomokuNode(this, player)
-        .alphaBeta(depth)
+        .search(depth)
         .map { it.gomoku.focus ?: throw IllegalStateException("focus == null") }
 }
 

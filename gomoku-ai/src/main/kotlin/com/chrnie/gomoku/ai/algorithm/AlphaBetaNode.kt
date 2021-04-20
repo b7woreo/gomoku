@@ -11,10 +11,10 @@ abstract class AlphaBetaNode<NODE : AlphaBetaNode<NODE>> {
 
     protected abstract fun children(): Sequence<NODE>
 
-    fun alphaBeta(depth: Int): List<NODE> =
+    fun search(depth: Int): List<NODE> =
         children()
             .fold(Pair(Int.MIN_VALUE, emptySequence<NODE>())) { (maxValue, sequence), node ->
-                val value = node.alphaBeta(depth - 1, maxValue, Int.MAX_VALUE, false)
+                val value = node.search(depth - 1, maxValue, Int.MAX_VALUE, false)
                 when {
                     value > maxValue -> Pair(value, sequenceOf(node))
                     value == maxValue -> Pair(maxValue, sequence + node)
@@ -23,7 +23,7 @@ abstract class AlphaBetaNode<NODE : AlphaBetaNode<NODE>> {
             }
             .let { (_, sequence) -> sequence.toList() }
 
-    private fun alphaBeta(depth: Int, alpha: Int, beta: Int, maximizingPlayer: Boolean): Int {
+    private fun search(depth: Int, alpha: Int, beta: Int, maximizingPlayer: Boolean): Int {
         if (depth == 0 || isTerminal()) {
             return heuristicValue()
         }
@@ -33,7 +33,7 @@ abstract class AlphaBetaNode<NODE : AlphaBetaNode<NODE>> {
             var value = Int.MIN_VALUE
 
             for (node in children()) {
-                value = max(value, node.alphaBeta(depth - 1, a, beta, false))
+                value = max(value, node.search(depth - 1, a, beta, false))
                 a = max(a, value)
                 if (beta <= a) {
                     break
@@ -46,7 +46,7 @@ abstract class AlphaBetaNode<NODE : AlphaBetaNode<NODE>> {
             var value = Int.MAX_VALUE
 
             for (node in children()) {
-                value = min(value, node.alphaBeta(depth - 1, alpha, b, true))
+                value = min(value, node.search(depth - 1, alpha, b, true))
                 b = min(b, value)
                 if (b <= alpha) {
                     break

@@ -7,7 +7,7 @@ import org.junit.Test
 class AlphaBetaNodeTest {
 
     @Test
-    fun alphaBeta() {
+    fun `test search`() {
 
         val expect = Node(
             children = sequenceOf(
@@ -21,7 +21,7 @@ class AlphaBetaNodeTest {
                 Node(children = sequenceOf(Node(-1), Node())),
                 expect
             )
-        ).alphaBeta(5)
+        ).search(5)
 
         assertEquals(1, result.size)
         assertEquals(expect, result[0])
