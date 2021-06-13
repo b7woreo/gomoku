@@ -52,7 +52,8 @@ enum class Direction(val dx: Int, val dy: Int) {
 
 }
 
-private inline class CoordinateImpl(private val value: Long) : Coordinate {
+@JvmInline
+private value class CoordinateImpl(private val value: Long) : Coordinate {
 
     override val x: Int
         get() = (value shr Int.SIZE_BITS).toInt()
